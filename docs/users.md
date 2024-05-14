@@ -90,13 +90,11 @@ HTTP Response 200
         "id": string
         "title": string
         "content": string
-        "image": string (image url)
       },
       {
         "id": string
         "title": string
         "content": string
-        "image": string (image url)
       }
     ]
   }

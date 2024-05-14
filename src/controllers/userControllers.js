@@ -1,4 +1,3 @@
-const jwt = require('jsonwebtoken');
 const userServices = require('../services/userServices');
 
 async function postUser(req, res, next) {
@@ -25,46 +24,46 @@ async function postUser(req, res, next) {
 
 async function getUsers(req, res, next) {
   try {
-    const users = await userServices.getUsers();
+    const users = await userServices.getUsers({ req });
 
     res.status(200).json({
       status: 'success',
-      data: users.map((u) => ({
-        ...u,
-        picture: `http://${req.headers.host}/${u.picture}`,
-      })),
+      data: users,
     });
   } catch (error) {
     next(error);
   }
 }
 
-async function login(req, res, next) {
+async function getUserProfile(req, res, next) {
   try {
-    const { email, password } = req.body;
+    const { id } = req.user;
 
-    const user = await userServices.login({ email, password });
-
-    const token = jwt.sign(
-      {
-        id: user.id,
-        email: user.email,
-        category: user.category,
-      },
-      'secretkey',
-      { expiresIn: '1h' },
-    );
+    const user = await userServices.getUserById({ id, req });
 
     res.status(200).json({
       status: 'success',
-      message: 'login berhasil',
-      data: {
-        token,
-      },
+      data: user,
     });
   } catch (error) {
     next(error);
   }
 }
 
-module.exports = { postUser, getUsers, login };
+async function getUserById(req, res, next) {
+  try {
+    const { userId } = req.params;
+    const user = await userServices.getUserById({ id: userId, req });
+
+    res.status(200).json({
+      status: 'success',
+      data: user,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+module.exports = {
+  postUser, getUsers, getUserProfile, getUserById,
+};

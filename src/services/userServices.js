@@ -1,8 +1,9 @@
 const bcrypt = require('bcrypt');
+
 const userRepositories = require('../repositories/userRepositories');
-const AuthenticationError = require('../exceptions/AuthenticationError');
 const InvariantError = require('../exceptions/InvariantError');
 const roles = require('../utils/roles');
+const mapping = require('../utils/mapping');
 
 async function postUser({
   name, email, password, category,
@@ -16,14 +17,14 @@ async function postUser({
   }
 
   const createdAt = new Date().toISOString();
-  const picture = 'public/blank-profile.png';
+  const profile = 'public/blank-profile.png';
   const hashedPassword = await bcrypt.hash(password, 10);
 
   const id = await userRepositories.postUser({
     name,
     email,
     password: hashedPassword,
-    picture,
+    profile,
     category: roles[categoryLowerCase],
     createdAt,
     updatedAt: createdAt,
@@ -32,26 +33,34 @@ async function postUser({
   return id;
 }
 
-async function getUsers() {
+async function getUsers({ req }) {
   const users = await userRepositories.getUsers();
-  return users;
+
+  const mappedUsers = users.map((u) => ({
+    ...u,
+    profile: `http://${req.headers.host}/${u.profile}`,
+  }));
+
+  return mappedUsers;
 }
 
-async function login({ email, password }) {
-  const result = await userRepositories.verifyAccount({ email });
-  const match = await bcrypt.compare(password, result.password);
+async function getUserById({ id, req }) {
+  const user = await userRepositories.checkUserExist({ id });
+  let mappedUser;
 
-  if (!match) {
-    throw new AuthenticationError('email atau password salah');
+  if (user.category === 'UMKM') {
+    const data = await userRepositories.getUserUMKM({ id });
+    mappedUser = mapping.userMappedforUMKM({ data, req });
+  } else if (user.category === 'MAHASISWA') {
+    const data = await userRepositories.getUserMahasiswa({ id });
+    mappedUser = mapping.userMappedforMahasiswa({ data, req });
+  } else {
+    throw new InvariantError('role tidak ditemukan');
   }
 
-  const mappedResult = {
-    id: result.id,
-    email: result.email,
-    category: result.category,
-  };
-
-  return mappedResult;
+  return mappedUser;
 }
 
-module.exports = { postUser, getUsers, login };
+module.exports = {
+  postUser, getUsers, getUserById,
+};

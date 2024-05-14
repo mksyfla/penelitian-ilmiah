@@ -26,6 +26,10 @@ exports.up = (pgm) => {
       type: 'boolean',
       notNull: true,
     },
+    image: {
+      type: 'varchar(100)',
+      notNull: true,
+    },
     created_at: {
       type: 'timestamp',
       notNull: true,

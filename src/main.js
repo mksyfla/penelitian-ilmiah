@@ -4,9 +4,10 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const cors = require('cors');
 
-const { userRoutes, loginRoutes } = require('./routes/userRoutes');
+const { userRoutes } = require('./routes/userRoutes');
+const { loginRoutes } = require('./routes/authRoutes');
 const { errorMiddleware } = require('./middleware/errorMiddleware');
-const { authMiddleware } = require('./middleware/authMiddleware');
+const { authenticationMiddleware, authorizationMiddleware } = require('./middleware/authMiddleware');
 
 function init() {
   const app = express();
@@ -19,10 +20,16 @@ function init() {
   app.use(userRoutes);
   app.use(errorMiddleware);
 
-  app.get('/', authMiddleware('UMKM'), (req, res, next) => {
-    res.send('hello world');
-    next();
-  });
+  app.get(
+    '/',
+    authenticationMiddleware(),
+    authorizationMiddleware('UMKM'),
+    (req, res, next) => {
+      console.log(req);
+      res.send('hello world');
+      next();
+    },
+  );
 
   app.listen(process.env.PORT, () => {
     console.log(`running on http://${process.env.HOST}:${process.env.PORT}`);

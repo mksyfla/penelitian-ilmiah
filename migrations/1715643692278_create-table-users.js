@@ -26,7 +26,7 @@ exports.up = (pgm) => {
       type: 'varchar(100)',
       notNull: true,
     },
-    picture: {
+    profile: {
       type: 'varchar(100)',
       notNull: true,
     },
