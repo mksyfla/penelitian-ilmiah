@@ -1,4 +1,4 @@
-const pg = require('../database/database');
+const pg = require('../utils/database');
 const InvariantError = require('../exceptions/InvariantError');
 const NotFoundError = require('../exceptions/NotFoundError');
 
@@ -7,10 +7,8 @@ async function postUser({
 }) {
   const query = {
     text: `
-    INSERT INTO
-      users(name, email, password, profile, created_at, updated_at, category)
-    VALUES
-      ($1, $2, $3, $4, $5, $6, $7)
+    INSERT INTO users(name, email, password, profile, created_at, updated_at, category)
+    VALUES ($1, $2, $3, $4, $5, $6, $7)
     RETURNING id`,
     values: [name, email, password, profile, createdAt, updatedAt, category],
   };
@@ -89,6 +87,20 @@ async function getUserMahasiswa({ id }) {
   return result.rows;
 }
 
+async function putUserById({
+  id, name, email, password, profile, updatedAt,
+}) {
+  console.log(password);
+  const query = {
+    text: `
+    UPDATE users
+    SET name = $1, email = $2, password = $3, profile = $4, updated_at = $5
+    WHERE id = $6`,
+    values: [name, email, password, profile, updatedAt, id],
+  };
+  await pg.query(query);
+}
+
 module.exports = {
-  postUser, verifyEmail, getUsers, getUserUMKM, getUserMahasiswa, checkUserExist,
+  postUser, verifyEmail, getUsers, getUserUMKM, getUserMahasiswa, checkUserExist, putUserById,
 };

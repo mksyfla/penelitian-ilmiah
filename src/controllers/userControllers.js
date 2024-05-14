@@ -64,6 +64,24 @@ async function getUserById(req, res, next) {
   }
 }
 
+async function putUserById(req, res, next) {
+  try {
+    const { id } = req.user;
+    const { name, email, password } = req.body;
+
+    await userServices.putUserById({
+      id, name, email, password, profile: '1234567890',
+    });
+
+    res.status(200).json({
+      status: 'success',
+      message: 'data user berhasil diubah',
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
-  postUser, getUsers, getUserProfile, getUserById,
+  postUser, getUsers, getUserProfile, getUserById, putUserById,
 };

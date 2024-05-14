@@ -1,4 +1,4 @@
-const pg = require('../database/database');
+const pg = require('../utils/database');
 const AuthenticationError = require('../exceptions/AuthenticationError');
 
 async function verifyAccount({ email }) {

@@ -61,6 +61,20 @@ async function getUserById({ id, req }) {
   return mappedUser;
 }
 
+async function putUserById({
+  id, name, email, password, profile,
+}) {
+  await userRepositories.checkUserExist({ id });
+  const updatedAt = new Date().toISOString();
+  const hashedPassword = await bcrypt.hash(password, 10);
+  console.log(password);
+  console.log(hashedPassword);
+
+  await userRepositories.putUserById({
+    id, name, email, password: hashedPassword, profile, updatedAt,
+  });
+}
+
 module.exports = {
-  postUser, getUsers, getUserById,
+  postUser, getUsers, getUserById, putUserById,
 };
