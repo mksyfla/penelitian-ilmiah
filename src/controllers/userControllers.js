@@ -1,4 +1,4 @@
-const { postUserService, getUsersService } = require('../services/userServices');
+const userServices = require('../services/userServices');
 
 async function postUserController(req, res, next) {
   try {
@@ -6,7 +6,7 @@ async function postUserController(req, res, next) {
       name, email, password, category,
     } = req.body;
 
-    const id = await postUserService({
+    const id = await userServices.postUserService({
       name, email, password, category,
     });
 
@@ -24,11 +24,14 @@ async function postUserController(req, res, next) {
 
 async function getUserController(req, res, next) {
   try {
-    const users = await getUsersService();
+    const users = await userServices.getUsersService();
 
-    res.status(201).json({
+    res.status(200).json({
       status: 'success',
-      data: users,
+      data: users.map((u) => ({
+        ...u,
+        picture: `http://${req.headers.host}/${u.picture}`,
+      })),
     });
   } catch (error) {
     next(error);

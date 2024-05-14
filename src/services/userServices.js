@@ -1,11 +1,11 @@
 const bcrypt = require('bcrypt');
-const { postUser, verifyEmail, getUsers } = require('../repositories/userRepositories');
+const userRepositories = require('../repositories/userRepositories');
 const InvariantError = require('../exceptions/InvariantError');
 
 async function postUserService({
   name, email, password, category,
 }) {
-  await verifyEmail({ email });
+  await userRepositories.verifyEmail({ email });
 
   if (category < 1 || category > 2) {
     throw new InvariantError('kategori ini tidak ada');
@@ -15,7 +15,7 @@ async function postUserService({
   const picture = 'public/blank-profile.png';
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  const id = await postUser({
+  const id = await userRepositories.postUser({
     name,
     email,
     password: hashedPassword,
@@ -29,8 +29,7 @@ async function postUserService({
 }
 
 async function getUsersService() {
-  const users = await getUsers();
-
+  const users = await userRepositories.getUsers();
   return users;
 }
 
