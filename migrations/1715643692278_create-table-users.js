@@ -38,17 +38,17 @@ exports.up = (pgm) => {
       type: 'timestamp',
       notNull: true,
     },
-    category_id: {
-      type: 'int',
+    category: {
+      type: 'varchar(30)',
       notNull: true,
     },
   });
 
-  pgm.addConstraint(
-    'users',
-    'fk_users.category_id_categories.id',
-    'FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE',
-  );
+  // pgm.addConstraint(
+  //   'users',
+  //   'fk_users.category_id_categories.id',
+  //   'FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE',
+  // );
 };
 
 /**

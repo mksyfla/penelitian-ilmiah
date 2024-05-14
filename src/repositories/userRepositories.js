@@ -1,7 +1,6 @@
-const { Pool } = require('pg');
+const pg = require('../database/database');
 const InvariantError = require('../exceptions/InvariantError');
-
-const pg = new Pool();
+const AuthenticationError = require('../exceptions/AuthenticationError');
 
 async function postUser({
   name, email, password, picture, category, createdAt, updatedAt,
@@ -9,7 +8,7 @@ async function postUser({
   const query = {
     text: `
     INSERT INTO
-      users(name, email, password, picture, created_at, updated_at, category_id)
+      users(name, email, password, picture, created_at, updated_at, category)
     VALUES
       ($1, $2, $3, $4, $5, $6, $7)
     RETURNING id`,
@@ -40,10 +39,7 @@ async function verifyEmail({ email }) {
 
 async function getUsers() {
   const query = {
-    text: `
-    SELECT u.id, u.name, c.category, u.picture
-    FROM users as u
-    LEFT JOIN categories as c ON u.category_id = c.id`,
+    text: 'SELECT id, name, category, picture FROM users',
   };
 
   const result = await pg.query(query);
@@ -51,4 +47,21 @@ async function getUsers() {
   return result.rows;
 }
 
-module.exports = { postUser, verifyEmail, getUsers };
+async function verifyAccount({ email }) {
+  const query = {
+    text: 'SELECT id, email, password, category FROM users WHERE email = $1',
+    values: [email],
+  };
+
+  const result = await pg.query(query);
+
+  if (!result.rows[0]) {
+    throw new AuthenticationError('email atau password salah');
+  }
+
+  return result.rows[0];
+}
+
+module.exports = {
+  postUser, verifyEmail, getUsers, verifyAccount,
+};

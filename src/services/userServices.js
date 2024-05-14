@@ -1,14 +1,18 @@
 const bcrypt = require('bcrypt');
 const userRepositories = require('../repositories/userRepositories');
+const AuthenticationError = require('../exceptions/AuthenticationError');
 const InvariantError = require('../exceptions/InvariantError');
+const roles = require('../utils/roles');
 
-async function postUserService({
+async function postUser({
   name, email, password, category,
 }) {
   await userRepositories.verifyEmail({ email });
 
-  if (category < 1 || category > 2) {
-    throw new InvariantError('kategori ini tidak ada');
+  const categoryLowerCase = category.toLowerCase();
+
+  if (!roles[categoryLowerCase]) {
+    throw new InvariantError('role tidak ditemukan');
   }
 
   const createdAt = new Date().toISOString();
@@ -20,7 +24,7 @@ async function postUserService({
     email,
     password: hashedPassword,
     picture,
-    category,
+    category: roles[categoryLowerCase],
     createdAt,
     updatedAt: createdAt,
   });
@@ -28,9 +32,26 @@ async function postUserService({
   return id;
 }
 
-async function getUsersService() {
+async function getUsers() {
   const users = await userRepositories.getUsers();
   return users;
 }
 
-module.exports = { postUserService, getUsersService };
+async function login({ email, password }) {
+  const result = await userRepositories.verifyAccount({ email });
+  const match = await bcrypt.compare(password, result.password);
+
+  if (!match) {
+    throw new AuthenticationError('email atau password salah');
+  }
+
+  const mappedResult = {
+    id: result.id,
+    email: result.email,
+    category: result.category,
+  };
+
+  return mappedResult;
+}
+
+module.exports = { postUser, getUsers, login };

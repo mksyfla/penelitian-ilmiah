@@ -9,19 +9,12 @@ exports.shorthands = undefined;
  * @returns {Promise<void> | void}
  */
 exports.up = (pgm) => {
-  pgm.createTable('categories', {
-    id: {
-      type: 'serial',
-      primaryKey: true,
-    },
-    category: {
-      type: 'varchar(30)',
+  pgm.createTable('authentications', {
+    token: {
+      type: 'TEXT',
       notNull: true,
     },
   });
-
-  pgm.sql("INSERT INTO categories(category) VALUES ('UMKM')");
-  pgm.sql("INSERT INTO categories(category) VALUES ('Mahasiswa')");
 };
 
 /**
@@ -30,5 +23,5 @@ exports.up = (pgm) => {
  * @returns {Promise<void> | void}
  */
 exports.down = (pgm) => {
-  pgm.dropTable('categories');
+  pgm.dropTable('authentications');
 };

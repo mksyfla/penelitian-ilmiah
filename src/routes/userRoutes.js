@@ -3,7 +3,11 @@ const userControllers = require('../controllers/userControllers');
 
 const userRoutes = express.Router();
 
-userRoutes.post('/api/v1/users', userControllers.postUserController);
-userRoutes.get('/api/v1/users', userControllers.getUserController);
+userRoutes.post('/api/v1/users', userControllers.postUser);
+userRoutes.get('/api/v1/users', userControllers.getUsers);
 
-module.exports = { userRoutes };
+const loginRoutes = express.Router();
+
+loginRoutes.post('/api/v1/login', userControllers.login);
+
+module.exports = { userRoutes, loginRoutes };
