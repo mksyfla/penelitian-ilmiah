@@ -10,6 +10,7 @@ const { userRoutes } = require('./routes/userRoutes');
 const { loginRoutes } = require('./routes/authRoutes');
 const { errorMiddleware } = require('./middleware/errorMiddleware');
 const { jobRoutes } = require('./routes/jobRoutes');
+const { workRoutes } = require('./routes/workRoutes');
 
 function init() {
   const app = express();
@@ -23,6 +24,7 @@ function init() {
   app.use(loginRoutes);
   app.use(userRoutes);
   app.use(jobRoutes);
+  app.use(workRoutes);
   app.use(errorMiddleware);
 
   app.post('/', (req, res, next) => {

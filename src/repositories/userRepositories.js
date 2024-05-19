@@ -22,6 +22,24 @@ async function postUser({
   return result.rows[0].id;
 }
 
+async function putUserById({
+  id, name, email, password, profile, updatedAt,
+}) {
+  const query = {
+    text: `
+    UPDATE users
+    SET name = $1, email = $2, password = $3, profile = $4, updated_at = $5
+    WHERE id = $6
+    RETURNING id`,
+    values: [name, email, password, profile, updatedAt, id],
+  };
+  const result = await pg.query(query);
+
+  if (!result.rowCount) {
+    throw new NotFoundError('user tidak ditemukan');
+  }
+}
+
 async function verifyEmail({ email }) {
   const query = {
     text: 'SELECT email FROM users WHERE email = $1',
@@ -96,24 +114,6 @@ async function getUserMahasiswa({ id }) {
   }
 
   return result.rows;
-}
-
-async function putUserById({
-  id, name, email, password, profile, updatedAt,
-}) {
-  const query = {
-    text: `
-    UPDATE users
-    SET name = $1, email = $2, password = $3, profile = $4, updated_at = $5
-    WHERE id = $6
-    RETURNING id`,
-    values: [name, email, password, profile, updatedAt, id],
-  };
-  const result = await pg.query(query);
-
-  if (!result.rowCount) {
-    throw new NotFoundError('user tidak ditemukan');
-  }
 }
 
 module.exports = {
