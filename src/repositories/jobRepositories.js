@@ -81,20 +81,22 @@ async function getJobs() {
   return result.rows;
 }
 
-// async function getJobById({ id }) {
-//   const query = {
-//     text: `SELECT u.id, u.name, u.email, u.category, u.profile, j.id as job_id, j.title as job_title, j.content as job_content
-//     FROM users as u
-//     LEFT JOIN jobs as j ON j.user_id = u.id
-//     WHERE (u.id = $1 AND u.category = 'UMKM')
-//     ORDER BY j.created_at ASC`,
-//     values: [id],
-//   };
+async function getJobById({ id }) {
+  const query = {
+    text: `SELECT j.id, j.title, j.content, j.deadline, u.name, w.id as work_id, w.title as work_title, w.content as work_content, w.image as work_image, w.is_choose as work_is_choose, u2.name as work_name
+    FROM jobs as j
+    LEFT JOIN works as w ON w.job_id = j.id
+    LEFT JOIN users as u ON j.user_id = u.id
+    LEFT JOIN users as u2 ON w.user_id = u2.id
+    WHERE j.id = $1
+    ORDER BY w.is_choose ASC`,
+    values: [id],
+  };
 
-//   const result = await pg.query(query);
-//   return result.rows;
-// }
+  const result = await pg.query(query);
+  return result.rows;
+}
 
 module.exports = {
-  postJob, putJobById, verifyOwnerJob, deleteJobById, getJobs,
+  postJob, putJobById, verifyOwnerJob, deleteJobById, getJobs, getJobById,
 };

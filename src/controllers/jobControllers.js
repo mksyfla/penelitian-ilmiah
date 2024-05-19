@@ -71,6 +71,20 @@ async function getJobs(req, res, next) {
   }
 }
 
+async function getJobById(req, res, next) {
+  try {
+    const { jobId } = req.params;
+
+    const data = await jobServices.getJobById({ id: jobId, req });
+    res.status(200).json({
+      status: 'success',
+      data,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
-  postJob, putJobById, deleteJobById, getJobs
+  postJob, putJobById, deleteJobById, getJobs, getJobById,
 };

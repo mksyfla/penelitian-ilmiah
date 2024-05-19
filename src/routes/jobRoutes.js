@@ -23,6 +23,7 @@ jobRoutes.delete(
   authMiddleware.authorizationMiddleware('UMKM'),
   jobControllers.deleteJobById,
 );
-jobRoutes.delete('/api/v1/jobs', jobControllers.getJobs);
+jobRoutes.get('/api/v1/jobs', jobControllers.getJobs);
+jobRoutes.get('/api/v1/jobs/:jobId', jobControllers.getJobById);
 
 module.exports = { jobRoutes };

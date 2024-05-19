@@ -1,4 +1,5 @@
 const jobRepositories = require('../repositories/jobRepositories');
+const mapping = require('../utils/mapping');
 
 async function postJob({
   title, content, deadline, userId,
@@ -42,6 +43,13 @@ async function getJobs() {
   return data;
 }
 
+async function getJobById({ id, req }) {
+  const data = await jobRepositories.getJobById({ id });
+  const mappedJob = mapping.jobByIdMapped({ data, req });
+
+  return mappedJob;
+}
+
 module.exports = {
-  postJob, putJobById, deleteJobById, getJobs,
+  postJob, putJobById, deleteJobById, getJobs, getJobById,
 };

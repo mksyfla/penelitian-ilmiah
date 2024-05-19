@@ -54,4 +54,34 @@ function userMappedforUMKM({ data, req }) {
   return mappedUser;
 }
 
-module.exports = { userMappedforMahasiswa, userMappedforUMKM };
+function jobByIdMapped({ data, req }) {
+  let mappedJob;
+
+  data.forEach((item) => {
+    if (!mappedJob) {
+      mappedJob = {
+        id: item.id,
+        title: item.title,
+        content: item.content,
+        deadline: item.deadline,
+        creator: item.name,
+        works: [],
+      };
+    }
+
+    if (item.work_id) {
+      mappedJob.works.push({
+        id: item.work_id,
+        title: item.work_title,
+        content: item.work_content,
+        image: `http://${req.headers.host}/${item.work_image}`,
+        isChoose: item.work_is_choose,
+        creator: item.work_name,
+      });
+    }
+  });
+
+  return mappedJob;
+}
+
+module.exports = { userMappedforMahasiswa, userMappedforUMKM, jobByIdMapped };
