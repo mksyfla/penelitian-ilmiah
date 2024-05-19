@@ -19,7 +19,7 @@ async function login({ email, password }) {
       category: result.category,
     },
     'secretkey',
-    { expiresIn: '1h' },
+    { expiresIn: '1d' },
   );
 
   return token;

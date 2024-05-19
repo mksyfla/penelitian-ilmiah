@@ -47,7 +47,7 @@ async function getUsers() {
 
 async function checkUserExist({ id }) {
   const query = {
-    text: 'SELECT id, category FROM users WHERE id = $1',
+    text: 'SELECT id, category, profile FROM users WHERE id = $1',
     values: [id],
   };
 
@@ -62,15 +62,20 @@ async function checkUserExist({ id }) {
 
 async function getUserUMKM({ id }) {
   const query = {
-    text: `SELECT u.id, u.name, u.email, u.category, u.profile, j.id as job_id, j.title as job_title, j.content as job_content
+    text: `SELECT u.id, u.name, u.email, u.category, u.profile, j.id as job_id, j.title as job_title, j.content as job_content, j.deadline as job_deadline
     FROM users as u
     LEFT JOIN jobs as j ON j.user_id = u.id
-    WHERE u.id = $1
+    WHERE (u.id = $1 AND u.category = 'UMKM')
     ORDER BY j.created_at ASC`,
     values: [id],
   };
 
   const result = await pg.query(query);
+
+  if (!result.rowCount) {
+    throw new NotFoundError('user tidak ditemukan');
+  }
+
   return result.rows;
 }
 
@@ -79,26 +84,36 @@ async function getUserMahasiswa({ id }) {
     text: `SELECT u.id, u.name, u.email, u.category, u.profile, w.id as work_id, w.title as work_title, w.content as work_content, w.image as work_image
     FROM users as u
     LEFT JOIN works as w ON w.user_id = u.id
-    WHERE u.id = $1`,
+    WHERE (u.id = $1 AND u.category = 'MAHASISWA')
+    ORDER BY w.created_at ASC`,
     values: [id],
   };
 
   const result = await pg.query(query);
+
+  if (!result.rowCount) {
+    throw new NotFoundError('user tidak ditemukan');
+  }
+
   return result.rows;
 }
 
 async function putUserById({
   id, name, email, password, profile, updatedAt,
 }) {
-  console.log(password);
   const query = {
     text: `
     UPDATE users
     SET name = $1, email = $2, password = $3, profile = $4, updated_at = $5
-    WHERE id = $6`,
+    WHERE id = $6
+    RETURNING id`,
     values: [name, email, password, profile, updatedAt, id],
   };
-  await pg.query(query);
+  const result = await pg.query(query);
+
+  if (!result.rowCount) {
+    throw new NotFoundError('user tidak ditemukan');
+  }
 }
 
 module.exports = {

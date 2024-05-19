@@ -1,14 +1,13 @@
 # Users API Spec
 
-## register User API
-Endpoint : POST /api/v1/users
+## Create Job API
+Endpoint : POST /api/v1/jobs
 
 Body Request :
 ```
-name: "Muhammad Kasyfil Aziz"
-email: "mksyfla@gmail.com"
-password: "test"
-category: "UMKM"
+"title": "test",
+"content": "content",
+"deadline": "2024-05-18"
 ```
 
 Reponse :
@@ -16,32 +15,32 @@ Reponse :
 HTTP Response 201
 {
   "status": "success"
-  "message": "user berhasil dibuat"
+  "message": "job berhasil dibuat"
   "data": {
     "id": 1
   }
 }
 ```
 
-## Update User API
-Endpoint : PUT /api/v1/users/:userId
+## Update Job API
+Endpoint : PUT /api/v1/jobs/:jobId
 
 Headers:
 - Authorization: token
+- Role: UMKM
 
 Body Request :
 ```
-name: "Muhammad Kasyfil Aziz"
-email: "kasyfil@gmail.com"
-password: "test-123"
-profile: file
+"title": "test update",
+"content": "content update",
+"deadline": "2024-05-20"
 ```
 
 Reponse :
 ```
 HTTP Response 200
 {
-  "message": "data user berhasil diubah"
+  "message": "data job berhasil diubah"
 }
 ```
 
@@ -71,7 +70,7 @@ HTTP Response 200
 ```
 
 ## Get User Details API
-Endpoint: GET /api/v1/users/:userId
+Endpoint: GET /api/v1/users/:jobId
 
 Response :
 - UMKM :
@@ -130,7 +129,7 @@ HTTP Response 200
 ```
 
 ## Delete User API
-Endpoint : DELETE /api/v1/users/:userId
+Endpoint : DELETE /api/v1/jobs/:jobId
 
 Headers:
 - Authorization: token
@@ -139,6 +138,6 @@ Reponse :
 ```
 HTTP Response 200
 {
-  "message": "data user berhasil dihapus"
+  "message": "data job berhasil dihapus"
 }
 ```

@@ -1,4 +1,6 @@
 const bcrypt = require('bcrypt');
+const path = require('path');
+const fs = require('fs');
 
 const userRepositories = require('../repositories/userRepositories');
 const InvariantError = require('../exceptions/InvariantError');
@@ -62,16 +64,28 @@ async function getUserById({ id, req }) {
 }
 
 async function putUserById({
-  id, name, email, password, profile,
+  id, name, email, password, profile, next,
 }) {
-  await userRepositories.checkUserExist({ id });
+  const result = await userRepositories.checkUserExist({ id });
   const updatedAt = new Date().toISOString();
   const hashedPassword = await bcrypt.hash(password, 10);
-  console.log(password);
-  console.log(hashedPassword);
+
+  const filename = `${Date.now()}-${profile.name}`;
+
+  profile.mv(path.join(__dirname, '../public/') + filename, (error) => {
+    if (error) {
+      next(error);
+    }
+  });
 
   await userRepositories.putUserById({
-    id, name, email, password: hashedPassword, profile, updatedAt,
+    id, name, email, password: hashedPassword, profile: `public/${filename}`, updatedAt,
+  });
+
+  fs.rm(path.join(__dirname, '../') + result.profile, (error) => {
+    if (error) {
+      next(error);
+    }
   });
 }
 

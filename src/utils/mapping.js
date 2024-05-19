@@ -46,6 +46,7 @@ function userMappedforUMKM({ data, req }) {
         id: item.job_id,
         title: item.job_title,
         content: item.job_content,
+        deadline: item.job_deadline,
       });
     }
   });

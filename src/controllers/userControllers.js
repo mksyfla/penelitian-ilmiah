@@ -12,7 +12,7 @@ async function postUser(req, res, next) {
 
     res.status(201).json({
       status: 'success',
-      message: 'user telah dibuat',
+      message: 'user berhasil dibuat',
       data: {
         id,
       },
@@ -68,14 +68,15 @@ async function putUserById(req, res, next) {
   try {
     const { id } = req.user;
     const { name, email, password } = req.body;
+    const { profile } = req.files;
 
     await userServices.putUserById({
-      id, name, email, password, profile: '1234567890',
+      id, name, email, password, profile, next,
     });
 
     res.status(200).json({
       status: 'success',
-      message: 'data user berhasil diubah',
+      message: 'user berhasil diubah',
     });
   } catch (error) {
     next(error);
