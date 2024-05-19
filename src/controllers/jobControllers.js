@@ -11,7 +11,7 @@ async function postJob(req, res, next) {
 
     res.status(201).json({
       status: 'success',
-      message: 'job telah dibuat',
+      message: 'kriteria berhasil ditambahkan',
       data: {
         id,
       },
@@ -33,7 +33,7 @@ async function putJobById(req, res, next) {
 
     res.status(200).json({
       status: 'success',
-      message: 'job berhasil diubah',
+      message: 'kriteria berhasil diubah',
     });
   } catch (error) {
     next(error);
@@ -51,7 +51,7 @@ async function deleteJobById(req, res, next) {
 
     res.status(200).json({
       status: 'success',
-      message: 'job berhasil dihapus',
+      message: 'kriteria berhasil dihapus',
     });
   } catch (error) {
     next(error);

@@ -22,6 +22,7 @@ async function postJob({
 async function putJobById({
   id, title, content, deadline, userId,
 }) {
+  await jobRepositories.verifyJobExist({ id });
   await jobRepositories.verifyOwnerJob({ id: userId });
 
   const updatedAt = new Date().toISOString();
@@ -32,6 +33,7 @@ async function putJobById({
 }
 
 async function deleteJobById({ id, userId }) {
+  await jobRepositories.verifyJobExist({ id });
   await jobRepositories.verifyOwnerJob({ id: userId });
 
   await jobRepositories.deleteJobById({ id, userId });

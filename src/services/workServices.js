@@ -1,6 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const workRepositories = require('../repositories/workRepositories');
+const jobRepositories = require('../repositories/jobRepositories');
 
 async function postWork({
   title, content, image, jobId, userId, next,
@@ -25,7 +26,11 @@ async function postWork({
 async function putWorkById({
   id, title, content, image, jobId, userId, next,
 }) {
-  const result = await workRepositories.checkWorkExist({ id, jobId });
+  await jobRepositories.verifyJobExist({ id: jobId });
+  await workRepositories.verifyWorkExist({ id });
+  await workRepositories.verifyOwnerWork({ id: userId });
+  const result = await workRepositories.getImagePath({ id });
+
   const updatedAt = new Date().toISOString();
 
   const filename = `${Date.now()}-${image.name}`;
@@ -50,7 +55,10 @@ async function putWorkById({
 async function deleteWorkById({
   id, userId, jobId, next,
 }) {
-  const result = await workRepositories.checkWorkExist({ id, jobId });
+  await jobRepositories.verifyJobExist({ id: jobId });
+  await workRepositories.verifyWorkExist({ id });
+  await workRepositories.verifyOwnerWork({ id: userId });
+  const result = await workRepositories.getImagePath({ id });
 
   await workRepositories.deleteWorkById({
     id, userId,
