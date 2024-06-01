@@ -1,15 +1,21 @@
 const express = require('express');
 
-const userControllers = require('../controllers/userControllers');
-const authMiddleware = require('../middleware/authMiddleware');
+const {
+  postUserController,
+  getUsersController,
+  getUserProfileController,
+  getUserByIdController,
+  putUserByIdController,
+} = require('../controllers/userControllers');
+const { authenticationMiddleware } = require('../middleware/authMiddleware');
 
 const userRoutes = express.Router();
 
-userRoutes.post('/api/users', userControllers.postUser);
-userRoutes.get('/api/users', userControllers.getUsers);
-userRoutes.get('/api/users/:userId', userControllers.getUserById);
+userRoutes.post('/api/users', postUserController);
+userRoutes.get('/api/users', getUsersController);
+userRoutes.get('/api/users/:userId', getUserByIdController);
 
-userRoutes.put('/api/profile', authMiddleware.authenticationMiddleware(), userControllers.putUserById);
-userRoutes.get('/api/profile', authMiddleware.authenticationMiddleware(), userControllers.getUserProfile);
+userRoutes.put('/api/profile', authenticationMiddleware(), putUserByIdController);
+userRoutes.get('/api/profile', authenticationMiddleware(), getUserProfileController);
 
 module.exports = { userRoutes };

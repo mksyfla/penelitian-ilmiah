@@ -2,7 +2,7 @@ const pg = require('../utils/database');
 const InvariantError = require('../exceptions/InvariantError');
 const NotFoundError = require('../exceptions/NotFoundError');
 
-async function postUser({
+async function postUserRepository({
   name, email, password, profile, category, createdAt, updatedAt,
 }) {
   const query = {
@@ -22,7 +22,7 @@ async function postUser({
   return result.rows[0].id;
 }
 
-async function putUserById({
+async function putUserByIdRepository({
   id, name, email, password, profile, updatedAt,
 }) {
   const query = {
@@ -53,7 +53,7 @@ async function verifyEmail({ email }) {
   }
 }
 
-async function getUsers() {
+async function getUsersRepository() {
   const query = {
     text: 'SELECT id, name, category, profile FROM users',
   };
@@ -117,5 +117,11 @@ async function getUserMahasiswa({ id }) {
 }
 
 module.exports = {
-  postUser, verifyEmail, getUsers, getUserUMKM, getUserMahasiswa, checkUserExist, putUserById,
+  postUserRepository,
+  verifyEmail,
+  getUsersRepository,
+  getUserUMKM,
+  getUserMahasiswa,
+  checkUserExist,
+  putUserByIdRepository,
 };

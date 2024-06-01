@@ -1,12 +1,14 @@
-const userServices = require('../services/userServices');
+const {
+  postUserService, getUsersService, getUserByIdService, putUserByIdService,
+} = require('../services/userServices');
 
-async function postUser(req, res, next) {
+async function postUserController(req, res, next) {
   try {
     const {
       name, email, password, category,
     } = req.body;
 
-    const id = await userServices.postUser({
+    const id = await postUserService({
       name, email, password, category,
     });
 
@@ -22,9 +24,9 @@ async function postUser(req, res, next) {
   }
 }
 
-async function getUsers(req, res, next) {
+async function getUsersController(req, res, next) {
   try {
-    const users = await userServices.getUsers({ req });
+    const users = await getUsersService({ req });
 
     res.status(200).json({
       status: 'success',
@@ -35,11 +37,11 @@ async function getUsers(req, res, next) {
   }
 }
 
-async function getUserProfile(req, res, next) {
+async function getUserProfileController(req, res, next) {
   try {
     const { id } = req.user;
 
-    const user = await userServices.getUserById({ id, req });
+    const user = await getUserByIdService({ id, req });
 
     res.status(200).json({
       status: 'success',
@@ -50,10 +52,10 @@ async function getUserProfile(req, res, next) {
   }
 }
 
-async function getUserById(req, res, next) {
+async function getUserByIdController(req, res, next) {
   try {
     const { userId } = req.params;
-    const user = await userServices.getUserById({ id: userId, req });
+    const user = await getUserByIdService({ id: userId, req });
 
     res.status(200).json({
       status: 'success',
@@ -64,13 +66,13 @@ async function getUserById(req, res, next) {
   }
 }
 
-async function putUserById(req, res, next) {
+async function putUserByIdController(req, res, next) {
   try {
     const { id } = req.user;
     const { name, email, password } = req.body;
     const { profile } = req.files;
 
-    await userServices.putUserById({
+    await putUserByIdService({
       id, name, email, password, profile, next,
     });
 
@@ -84,5 +86,9 @@ async function putUserById(req, res, next) {
 }
 
 module.exports = {
-  postUser, getUsers, getUserProfile, getUserById, putUserById,
+  postUserController,
+  getUsersController,
+  getUserProfileController,
+  getUserByIdController,
+  putUserByIdController,
 };
