@@ -85,6 +85,24 @@ async function getJobById(req, res, next) {
   }
 }
 
+async function chooseWork(req, res, next) {
+  try {
+    const { jobId, workId } = req.params;
+    const { id: userId } = req.user;
+
+    await jobServices.chooseWork({
+      id: jobId, workId, userId,
+    });
+
+    res.status(200).json({
+      status: 'success',
+      message: 'karya telah dipilih',
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
-  postJob, putJobById, deleteJobById, getJobs, getJobById,
+  postJob, putJobById, deleteJobById, getJobs, getJobById, chooseWork,
 };

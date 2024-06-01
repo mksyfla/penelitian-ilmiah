@@ -24,7 +24,7 @@ async function getJobById({ id }) {
     LEFT JOIN users as u ON j.user_id = u.id
     LEFT JOIN users as u2 ON w.user_id = u2.id
     WHERE j.id = $1
-    ORDER BY w.is_choose ASC`,
+    ORDER BY w.is_choose DESC`,
     values: [id],
   };
 
@@ -102,6 +102,26 @@ async function verifyJobExist({ id }) {
   }
 }
 
+async function verifyDeadline({ id, deadline }) {
+  const query = {
+    text: 'SELECT id FROM jobs WHERE id = $1 AND deadline > $2',
+    values: [id, deadline],
+  };
+
+  const result = await pg.query(query);
+
+  if (!result.rowCount) {
+    throw new InvariantError('kriteria ini telah selesai');
+  }
+}
+
 module.exports = {
-  postJob, putJobById, verifyOwnerJob, deleteJobById, getJobs, getJobById, verifyJobExist,
+  postJob,
+  putJobById,
+  verifyOwnerJob,
+  deleteJobById,
+  getJobs,
+  getJobById,
+  verifyJobExist,
+  verifyDeadline,
 };

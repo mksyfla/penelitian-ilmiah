@@ -1,4 +1,5 @@
 const jobRepositories = require('../repositories/jobRepositories');
+const workRepositories = require('../repositories/workRepositories');
 const mapping = require('../utils/mapping');
 
 async function postJob({
@@ -52,6 +53,13 @@ async function getJobById({ id, req }) {
   return mappedJob;
 }
 
+async function chooseWork({ id, workId, userId }) {
+  await jobRepositories.verifyJobExist({ id });
+  await jobRepositories.verifyOwnerJob({ id: userId });
+  await workRepositories.verifyWorkExist({ id: workId });
+  await workRepositories.workChoose({ id: workId, jobId: workId });
+}
+
 module.exports = {
-  postJob, putJobById, deleteJobById, getJobs, getJobById,
+  postJob, putJobById, deleteJobById, getJobs, getJobById, chooseWork,
 };

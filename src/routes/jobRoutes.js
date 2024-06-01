@@ -26,4 +26,11 @@ jobRoutes.delete(
 jobRoutes.get('/api/jobs', jobControllers.getJobs);
 jobRoutes.get('/api/jobs/:jobId', jobControllers.getJobById);
 
+jobRoutes.post(
+  '/api/jobs/:jobId/works/:workId',
+  authMiddleware.authenticationMiddleware(),
+  authMiddleware.authorizationMiddleware('UMKM'),
+  jobControllers.chooseWork,
+);
+
 module.exports = { jobRoutes };

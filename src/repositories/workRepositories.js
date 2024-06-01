@@ -99,6 +99,15 @@ async function getImagePath({ id }) {
   return result.rows[0].image;
 }
 
+async function workChoose({ id, jobId }) {
+  const query = {
+    text: 'UPDATE works SET is_choose = true WHERE id = $1 AND job_id = $2',
+    values: [id, jobId],
+  };
+
+  await pg.query(query);
+}
+
 module.exports = {
   postWork,
   putWorkById,
@@ -107,4 +116,5 @@ module.exports = {
   getWorkById,
   verifyOwnerWork,
   getImagePath,
+  workChoose,
 };

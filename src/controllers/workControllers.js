@@ -13,7 +13,7 @@ async function postWork(req, res, next) {
 
     res.status(201).json({
       status: 'success',
-      message: 'work berhasil dibuat',
+      message: 'karya berhasil dibuat',
       data: {
         id,
       },
@@ -36,7 +36,7 @@ async function putWorkById(req, res, next) {
 
     res.status(200).json({
       status: 'success',
-      message: 'work berhasil diubah',
+      message: 'karya berhasil diubah',
     });
   } catch (error) {
     next(error);
@@ -54,7 +54,7 @@ async function deleteWorkById(req, res, next) {
 
     res.status(200).json({
       status: 'success',
-      message: 'work berhasil dihapus',
+      message: 'karya berhasil dihapus',
     });
   } catch (error) {
     next(error);

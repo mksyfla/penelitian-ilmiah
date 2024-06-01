@@ -7,6 +7,7 @@ async function postWork({
   title, content, image, jobId, userId, next,
 }) {
   const createdAt = new Date().toISOString();
+  await jobRepositories.verifyDeadline({ id: jobId, deadline: createdAt });
 
   const filename = `${Date.now()}-${image.name}`;
 
