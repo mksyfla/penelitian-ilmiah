@@ -3,7 +3,7 @@ const InvariantError = require('../exceptions/InvariantError');
 const NotFoundError = require('../exceptions/NotFoundError');
 const AuthorizationError = require('../exceptions/AuthorizationError');
 
-async function getWorkById({ id, jobId }) {
+async function getWorkByIdRepository({ id, jobId }) {
   const query = {
     text: `SELECT w.id, w.title, w.content, w.is_choose, w.image, w.created_at as createdAt, u.name
     FROM works as w
@@ -22,7 +22,7 @@ async function getWorkById({ id, jobId }) {
   return result.rows;
 }
 
-async function postWork({
+async function postWorkRepository({
   title, content, image, createdAt, updatedAt, jobId, userId,
 }) {
   const query = {
@@ -41,7 +41,7 @@ async function postWork({
   return result.rows[0].id;
 }
 
-async function putWorkById({
+async function putWorkByIdRepository({
   id, title, content, image, updatedAt, userId,
 }) {
   const query = {
@@ -54,7 +54,7 @@ async function putWorkById({
   await pg.query(query);
 }
 
-async function deleteWorkById({ id, userId }) {
+async function deleteWorkByIdRepository({ id, userId }) {
   const query = {
     text: 'DELETE FROM works WHERE id = $1 AND job_id = $2',
     values: [id, userId],
@@ -109,11 +109,11 @@ async function workChoose({ id, jobId }) {
 }
 
 module.exports = {
-  postWork,
-  putWorkById,
+  postWorkRepository,
+  putWorkByIdRepository,
   verifyWorkExist,
-  deleteWorkById,
-  getWorkById,
+  deleteWorkByIdRepository,
+  getWorkByIdRepository,
   verifyOwnerWork,
   getImagePath,
   workChoose,

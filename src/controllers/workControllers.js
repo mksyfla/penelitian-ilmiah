@@ -1,13 +1,15 @@
-const workServices = require('../services/workServices');
+const {
+  postWorkService, putWorkByIdService, deleteWorkByIdService, getWorkByIdService,
+} = require('../services/workServices');
 
-async function postWork(req, res, next) {
+async function postWorkController(req, res, next) {
   try {
     const { title, content } = req.body;
     const { image } = req.files;
     const { jobId } = req.params;
     const { id: userId } = req.user;
 
-    const id = await workServices.postWork({
+    const id = await postWorkService({
       title, content, image, jobId, userId, next,
     });
 
@@ -23,14 +25,14 @@ async function postWork(req, res, next) {
   }
 }
 
-async function putWorkById(req, res, next) {
+async function putWorkByIdController(req, res, next) {
   try {
     const { title, content } = req.body;
     const { image } = req.files;
     const { jobId, workId } = req.params;
     const { id: userId } = req.user;
 
-    await workServices.putWorkById({
+    await putWorkByIdService({
       id: workId, title, content, image, jobId, userId, next,
     });
 
@@ -43,12 +45,12 @@ async function putWorkById(req, res, next) {
   }
 }
 
-async function deleteWorkById(req, res, next) {
+async function deleteWorkByIdController(req, res, next) {
   try {
     const { jobId, workId } = req.params;
     const { id: userId } = req.user;
 
-    await workServices.deleteWorkById({
+    await deleteWorkByIdService({
       id: workId, jobId, userId, next,
     });
 
@@ -61,11 +63,11 @@ async function deleteWorkById(req, res, next) {
   }
 }
 
-async function getWorkById(req, res, next) {
+async function getWorkByIdController(req, res, next) {
   try {
     const { jobId, workId } = req.params;
 
-    const data = await workServices.getWorkById({
+    const data = await getWorkByIdService({
       id: workId, jobId, req,
     });
 
@@ -79,5 +81,5 @@ async function getWorkById(req, res, next) {
 }
 
 module.exports = {
-  postWork, putWorkById, deleteWorkById, getWorkById,
+  postWorkController, putWorkByIdController, deleteWorkByIdController, getWorkByIdController,
 };

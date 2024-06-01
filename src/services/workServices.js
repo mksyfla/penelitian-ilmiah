@@ -1,9 +1,17 @@
 const path = require('path');
 const fs = require('fs');
-const workRepositories = require('../repositories/workRepositories');
+const {
+  postWorkRepository,
+  putWorkByIdRepository,
+  verifyWorkExist,
+  deleteWorkByIdRepository,
+  getWorkByIdRepository,
+  verifyOwnerWork,
+  getImagePath,
+} = require('../repositories/workRepositories');
 const jobRepositories = require('../repositories/jobRepositories');
 
-async function postWork({
+async function postWorkService({
   title, content, image, jobId, userId, next,
 }) {
   const createdAt = new Date().toISOString();
@@ -17,20 +25,20 @@ async function postWork({
     }
   });
 
-  const id = await workRepositories.postWork({
+  const id = await postWorkRepository({
     title, content, image: `public/${filename}`, createdAt, updatedAt: createdAt, jobId, userId,
   });
 
   return id;
 }
 
-async function putWorkById({
+async function putWorkByIdService({
   id, title, content, image, jobId, userId, next,
 }) {
   await jobRepositories.verifyJobExist({ id: jobId });
-  await workRepositories.verifyWorkExist({ id });
-  await workRepositories.verifyOwnerWork({ id: userId });
-  const result = await workRepositories.getImagePath({ id });
+  await verifyWorkExist({ id });
+  await verifyOwnerWork({ id: userId });
+  const result = await getImagePath({ id });
 
   const updatedAt = new Date().toISOString();
 
@@ -42,7 +50,7 @@ async function putWorkById({
     }
   });
 
-  await workRepositories.putWorkById({
+  await putWorkByIdRepository({
     id, title, content, image: `public/${filename}`, updatedAt, userId,
   });
 
@@ -53,15 +61,15 @@ async function putWorkById({
   });
 }
 
-async function deleteWorkById({
+async function deleteWorkByIdService({
   id, userId, jobId, next,
 }) {
   await jobRepositories.verifyJobExist({ id: jobId });
-  await workRepositories.verifyWorkExist({ id });
-  await workRepositories.verifyOwnerWork({ id: userId });
-  const result = await workRepositories.getImagePath({ id });
+  await verifyWorkExist({ id });
+  await verifyOwnerWork({ id: userId });
+  const result = await getImagePath({ id });
 
-  await workRepositories.deleteWorkById({
+  await deleteWorkByIdRepository({
     id, userId,
   });
 
@@ -72,8 +80,8 @@ async function deleteWorkById({
   });
 }
 
-async function getWorkById({ id, jobId, req }) {
-  const data = await workRepositories.getWorkById({ id, jobId });
+async function getWorkByIdService({ id, jobId, req }) {
+  const data = await getWorkByIdRepository({ id, jobId });
 
   const mappedJob = data.map((d) => ({
     id: d.id,
@@ -89,5 +97,5 @@ async function getWorkById({ id, jobId, req }) {
 }
 
 module.exports = {
-  postWork, putWorkById, deleteWorkById, getWorkById,
+  postWorkService, putWorkByIdService, deleteWorkByIdService, getWorkByIdService,
 };

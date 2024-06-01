@@ -1,28 +1,30 @@
 const express = require('express');
 
-const workControllers = require('../controllers/workControllers');
-const authMiddleware = require('../middleware/authMiddleware');
+const {
+  postWorkController, putWorkByIdController, deleteWorkByIdController, getWorkByIdController,
+} = require('../controllers/workControllers');
+const { authenticationMiddleware, authorizationMiddleware } = require('../middleware/authMiddleware');
 
 const workRoutes = express.Router();
 
 workRoutes.post(
   '/api/jobs/:jobId/works',
-  authMiddleware.authenticationMiddleware(),
-  authMiddleware.authorizationMiddleware('MAHASISWA'),
-  workControllers.postWork,
+  authenticationMiddleware(),
+  authorizationMiddleware('MAHASISWA'),
+  postWorkController,
 );
 workRoutes.put(
   '/api/jobs/:jobId/works/:workId',
-  authMiddleware.authenticationMiddleware(),
-  authMiddleware.authorizationMiddleware('MAHASISWA'),
-  workControllers.putWorkById,
+  authenticationMiddleware(),
+  authorizationMiddleware('MAHASISWA'),
+  putWorkByIdController,
 );
 workRoutes.delete(
   '/api/jobs/:jobId/works/:workId',
-  authMiddleware.authenticationMiddleware(),
-  authMiddleware.authorizationMiddleware('MAHASISWA'),
-  workControllers.deleteWorkById,
+  authenticationMiddleware(),
+  authorizationMiddleware('MAHASISWA'),
+  deleteWorkByIdController,
 );
-workRoutes.get('/api/jobs/:jobId/works/:workId', workControllers.getWorkById);
+workRoutes.get('/api/jobs/:jobId/works/:workId', getWorkByIdController);
 
 module.exports = { workRoutes };
