@@ -66,7 +66,7 @@ async function getWorkById(req, res, next) {
     const { jobId, workId } = req.params;
 
     const data = await workServices.getWorkById({
-      id: workId, next,
+      id: workId, jobId, req,
     });
 
     res.status(200).json({

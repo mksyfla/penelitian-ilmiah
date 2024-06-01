@@ -3,17 +3,22 @@ const InvariantError = require('../exceptions/InvariantError');
 const NotFoundError = require('../exceptions/NotFoundError');
 const AuthorizationError = require('../exceptions/AuthorizationError');
 
-async function getWorkById({ id }) {
+async function getWorkById({ id, jobId }) {
   const query = {
     text: `SELECT w.id, w.title, w.content, w.is_choose, w.image, w.created_at as createdAt, u.name
     FROM works as w
     LEFT JOIN users as u ON w.user_id = u.id
-    WHERE w.id = $1
+    WHERE w.id = $1 AND w.job_id = $2
     ORDER BY w.is_choose ASC`,
-    values: [id],
+    values: [id, jobId],
   };
 
   const result = await pg.query(query);
+
+  if (!result.rowCount) {
+    throw new NotFoundError('karya tidak ditemukan');
+  }
+
   return result.rows;
 }
 
@@ -37,14 +42,14 @@ async function postWork({
 }
 
 async function putWorkById({
-  id, title, content, image, updatedAt, jobId, userId,
+  id, title, content, image, updatedAt, userId,
 }) {
   const query = {
     text: `
-    UPDATE jobs
+    UPDATE works
     SET title = $1, content = $2, image = $3, updated_at = $4
-    WHERE id = $5 AND job_id = $6 AND user_id = $7`,
-    values: [title, content, image, updatedAt, id, jobId, userId],
+    WHERE (id = $5 AND user_id = $6)`,
+    values: [title, content, image, updatedAt, id, userId],
   };
   await pg.query(query);
 }

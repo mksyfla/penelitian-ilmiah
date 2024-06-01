@@ -17,7 +17,7 @@ async function postWork({
   });
 
   const id = await workRepositories.postWork({
-    title, content, image: filename, createdAt, updatedAt: createdAt, jobId, userId,
+    title, content, image: `public/${filename}`, createdAt, updatedAt: createdAt, jobId, userId,
   });
 
   return id;
@@ -42,7 +42,7 @@ async function putWorkById({
   });
 
   await workRepositories.putWorkById({
-    id, title, content, image, updatedAt, jobId, userId,
+    id, title, content, image: `public/${filename}`, updatedAt, userId,
   });
 
   fs.rm(path.join(__dirname, '../') + result.image, (error) => {
@@ -71,8 +71,9 @@ async function deleteWorkById({
   });
 }
 
-async function getWorkById({ id, req }) {
-  const data = await workRepositories.getWorkById({ id });
+async function getWorkById({ id, jobId, req }) {
+  const data = await workRepositories.getWorkById({ id, jobId });
+
   const mappedJob = data.map((d) => ({
     id: d.id,
     title: d.title,
