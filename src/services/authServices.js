@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const authRepositories = require('../repositories/authRepositories');
 const AuthenticationError = require('../exceptions/AuthenticationError');
 
-async function login({ email, password }) {
+async function loginService({ email, password }) {
   const result = await authRepositories.verifyAccount({ email });
   const match = await bcrypt.compare(password, result.password);
 
@@ -25,4 +25,4 @@ async function login({ email, password }) {
   return token;
 }
 
-module.exports = { login };
+module.exports = { loginService };
