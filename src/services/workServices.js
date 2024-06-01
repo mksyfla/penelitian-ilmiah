@@ -1,5 +1,6 @@
 const path = require('path');
 const fs = require('fs');
+
 const {
   postWorkRepository,
   putWorkByIdRepository,
@@ -9,13 +10,16 @@ const {
   verifyOwnerWork,
   getImagePath,
 } = require('../repositories/workRepositories');
-const jobRepositories = require('../repositories/jobRepositories');
+const {
+  verifyJobExist,
+  verifyDeadline,
+} = require('../repositories/jobRepositories');
 
 async function postWorkService({
   title, content, image, jobId, userId, next,
 }) {
   const createdAt = new Date().toISOString();
-  await jobRepositories.verifyDeadline({ id: jobId, deadline: createdAt });
+  await verifyDeadline({ id: jobId, deadline: createdAt });
 
   const filename = `${Date.now()}-${image.name}`;
 
@@ -35,7 +39,7 @@ async function postWorkService({
 async function putWorkByIdService({
   id, title, content, image, jobId, userId, next,
 }) {
-  await jobRepositories.verifyJobExist({ id: jobId });
+  await verifyJobExist({ id: jobId });
   await verifyWorkExist({ id });
   await verifyOwnerWork({ id: userId });
   const result = await getImagePath({ id });
@@ -64,7 +68,7 @@ async function putWorkByIdService({
 async function deleteWorkByIdService({
   id, userId, jobId, next,
 }) {
-  await jobRepositories.verifyJobExist({ id: jobId });
+  await verifyJobExist({ id: jobId });
   await verifyWorkExist({ id });
   await verifyOwnerWork({ id: userId });
   const result = await getImagePath({ id });

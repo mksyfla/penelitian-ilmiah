@@ -1,36 +1,23 @@
 const express = require('express');
 
-const jobControllers = require('../controllers/jobControllers');
-const authMiddleware = require('../middleware/authMiddleware');
+const {
+  postJobController,
+  putJobByIdController,
+  deleteJobByIdController,
+  getJobsController,
+  getJobByIdController,
+  chooseWorkController,
+} = require('../controllers/jobControllers');
+const { authenticationMiddleware, authorizationMiddleware } = require('../middleware/authMiddleware');
 
 const jobRoutes = express.Router();
 
-jobRoutes.post(
-  '/api/jobs',
-  authMiddleware.authenticationMiddleware(),
-  authMiddleware.authorizationMiddleware('UMKM'),
-  jobControllers.postJob,
-);
-jobRoutes.put(
-  '/api/jobs/:jobId',
-  authMiddleware.authenticationMiddleware(),
-  authMiddleware.authorizationMiddleware('UMKM'),
-  jobControllers.putJobById,
-);
-jobRoutes.delete(
-  '/api/jobs/:jobId',
-  authMiddleware.authenticationMiddleware(),
-  authMiddleware.authorizationMiddleware('UMKM'),
-  jobControllers.deleteJobById,
-);
-jobRoutes.get('/api/jobs', jobControllers.getJobs);
-jobRoutes.get('/api/jobs/:jobId', jobControllers.getJobById);
+jobRoutes.get('/api/jobs', getJobsController);
+jobRoutes.get('/api/jobs/:jobId', getJobByIdController);
 
-jobRoutes.post(
-  '/api/jobs/:jobId/works/:workId',
-  authMiddleware.authenticationMiddleware(),
-  authMiddleware.authorizationMiddleware('UMKM'),
-  jobControllers.chooseWork,
-);
+jobRoutes.post('/api/jobs', authenticationMiddleware(), authorizationMiddleware('UMKM'), postJobController);
+jobRoutes.put('/api/jobs/:jobId', authenticationMiddleware(), authorizationMiddleware('UMKM'), putJobByIdController);
+jobRoutes.delete('/api/jobs/:jobId', authenticationMiddleware(), authorizationMiddleware('UMKM'), deleteJobByIdController);
+jobRoutes.post('/api/jobs/:jobId/works/:workId', authenticationMiddleware(), authorizationMiddleware('UMKM'), chooseWorkController);
 
 module.exports = { jobRoutes };

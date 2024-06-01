@@ -3,7 +3,7 @@ const InvariantError = require('../exceptions/InvariantError');
 const AuthorizationError = require('../exceptions/AuthorizationError');
 const NotFoundError = require('../exceptions/NotFoundError');
 
-async function getJobs() {
+async function getJobsRepository() {
   const query = {
     text: `
     SELECT j.id, j.title, j.content, u.name
@@ -16,7 +16,7 @@ async function getJobs() {
   return result.rows;
 }
 
-async function getJobById({ id }) {
+async function getJobByIdRepository({ id }) {
   const query = {
     text: `SELECT j.id, j.title, j.content, j.deadline, u.name, w.id as work_id, w.title as work_title, w.content as work_content, w.image as work_image, w.is_choose as work_is_choose, u2.name as work_name
     FROM jobs as j
@@ -32,7 +32,7 @@ async function getJobById({ id }) {
   return result.rows;
 }
 
-async function postJob({
+async function postJobRepository({
   title, content, deadline, createdAt, updatedAt, userId,
 }) {
   const query = {
@@ -52,7 +52,7 @@ async function postJob({
   return result.rows[0].id;
 }
 
-async function putJobById({
+async function putJobByIdRepository({
   id, title, content, deadline, updatedAt, userId,
 }) {
   const query = {
@@ -65,7 +65,7 @@ async function putJobById({
   await pg.query(query);
 }
 
-async function deleteJobById({ id, userId }) {
+async function deleteJobByIdRepository({ id, userId }) {
   const query = {
     text: `
     DELETE FROM jobs
@@ -116,12 +116,12 @@ async function verifyDeadline({ id, deadline }) {
 }
 
 module.exports = {
-  postJob,
-  putJobById,
+  postJobRepository,
+  putJobByIdRepository,
   verifyOwnerJob,
-  deleteJobById,
-  getJobs,
-  getJobById,
+  deleteJobByIdRepository,
+  getJobsRepository,
+  getJobByIdRepository,
   verifyJobExist,
   verifyDeadline,
 };

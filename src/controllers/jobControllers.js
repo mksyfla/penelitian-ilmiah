@@ -1,11 +1,18 @@
-const jobServices = require('../services/jobServices');
+const {
+  postJobService,
+  putJobByIdService,
+  deleteJobByIdService,
+  getJobsService,
+  getJobByIdService,
+  chooseWork,
+} = require('../services/jobServices');
 
-async function postJob(req, res, next) {
+async function postJobController(req, res, next) {
   try {
     const { title, content, deadline } = req.body;
     const { id: userId } = req.user;
 
-    const id = await jobServices.postJob({
+    const id = await postJobService({
       title, content, deadline, userId,
     });
 
@@ -21,13 +28,13 @@ async function postJob(req, res, next) {
   }
 }
 
-async function putJobById(req, res, next) {
+async function putJobByIdController(req, res, next) {
   try {
     const { title, content, deadline } = req.body;
     const { id: userId } = req.user;
     const { jobId } = req.params;
 
-    await jobServices.putJobById({
+    await putJobByIdService({
       id: jobId, title, content, deadline, userId,
     });
 
@@ -40,12 +47,12 @@ async function putJobById(req, res, next) {
   }
 }
 
-async function deleteJobById(req, res, next) {
+async function deleteJobByIdController(req, res, next) {
   try {
     const { id: userId } = req.user;
     const { jobId } = req.params;
 
-    await jobServices.deleteJobById({
+    await deleteJobByIdService({
       id: jobId, userId,
     });
 
@@ -58,9 +65,9 @@ async function deleteJobById(req, res, next) {
   }
 }
 
-async function getJobs(req, res, next) {
+async function getJobsController(req, res, next) {
   try {
-    const data = await jobServices.getJobs();
+    const data = await getJobsService();
 
     res.status(200).json({
       status: 'success',
@@ -71,11 +78,11 @@ async function getJobs(req, res, next) {
   }
 }
 
-async function getJobById(req, res, next) {
+async function getJobByIdController(req, res, next) {
   try {
     const { jobId } = req.params;
 
-    const data = await jobServices.getJobById({ id: jobId, req });
+    const data = await getJobByIdService({ id: jobId, req });
     res.status(200).json({
       status: 'success',
       data,
@@ -85,12 +92,12 @@ async function getJobById(req, res, next) {
   }
 }
 
-async function chooseWork(req, res, next) {
+async function chooseWorkController(req, res, next) {
   try {
     const { jobId, workId } = req.params;
     const { id: userId } = req.user;
 
-    await jobServices.chooseWork({
+    await chooseWork({
       id: jobId, workId, userId,
     });
 
@@ -104,5 +111,10 @@ async function chooseWork(req, res, next) {
 }
 
 module.exports = {
-  postJob, putJobById, deleteJobById, getJobs, getJobById, chooseWork,
+  postJobController,
+  putJobByIdController,
+  deleteJobByIdController,
+  getJobsController,
+  getJobByIdController,
+  chooseWorkController,
 };

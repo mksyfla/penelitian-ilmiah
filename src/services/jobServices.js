@@ -1,14 +1,22 @@
-const jobRepositories = require('../repositories/jobRepositories');
-const workRepositories = require('../repositories/workRepositories');
+const {
+  postJobRepository,
+  putJobByIdRepository,
+  verifyOwnerJob,
+  deleteJobByIdRepository,
+  getJobsRepository,
+  getJobByIdRepository,
+  verifyJobExist,
+} = require('../repositories/jobRepositories');
+const { verifyWorkExist, workChoose } = require('../repositories/workRepositories');
 const mapping = require('../utils/mapping');
 
-async function postJob({
+async function postJobService({
   title, content, deadline, userId,
 }) {
   const createdAt = new Date().toISOString();
   const newDeadline = new Date(deadline);
 
-  const id = await jobRepositories.postJob({
+  const id = await postJobRepository({
     title,
     content,
     deadline: newDeadline,
@@ -20,46 +28,51 @@ async function postJob({
   return id;
 }
 
-async function putJobById({
+async function putJobByIdService({
   id, title, content, deadline, userId,
 }) {
-  await jobRepositories.verifyJobExist({ id });
-  await jobRepositories.verifyOwnerJob({ id: userId });
+  await verifyJobExist({ id });
+  await verifyOwnerJob({ id: userId });
 
   const updatedAt = new Date().toISOString();
 
-  await jobRepositories.putJobById({
+  await putJobByIdRepository({
     id, title, content, deadline, updatedAt, userId,
   });
 }
 
-async function deleteJobById({ id, userId }) {
-  await jobRepositories.verifyJobExist({ id });
-  await jobRepositories.verifyOwnerJob({ id: userId });
+async function deleteJobByIdService({ id, userId }) {
+  await verifyJobExist({ id });
+  await verifyOwnerJob({ id: userId });
 
-  await jobRepositories.deleteJobById({ id, userId });
+  await deleteJobByIdRepository({ id, userId });
 }
 
-async function getJobs() {
-  const data = await jobRepositories.getJobs();
+async function getJobsService() {
+  const data = await getJobsRepository();
 
   return data;
 }
 
-async function getJobById({ id, req }) {
-  const data = await jobRepositories.getJobById({ id });
+async function getJobByIdService({ id, req }) {
+  const data = await getJobByIdRepository({ id });
   const mappedJob = mapping.jobByIdMapped({ data, req });
 
   return mappedJob;
 }
 
 async function chooseWork({ id, workId, userId }) {
-  await jobRepositories.verifyJobExist({ id });
-  await jobRepositories.verifyOwnerJob({ id: userId });
-  await workRepositories.verifyWorkExist({ id: workId });
-  await workRepositories.workChoose({ id: workId, jobId: workId });
+  await verifyJobExist({ id });
+  await verifyOwnerJob({ id: userId });
+  await verifyWorkExist({ id: workId });
+  await workChoose({ id: workId, jobId: workId });
 }
 
 module.exports = {
-  postJob, putJobById, deleteJobById, getJobs, getJobById, chooseWork,
+  postJobService,
+  putJobByIdService,
+  deleteJobByIdService,
+  getJobsService,
+  getJobByIdService,
+  chooseWork,
 };
