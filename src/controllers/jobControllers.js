@@ -6,10 +6,12 @@ const {
   getJobByIdService,
   chooseWork,
 } = require('../services/jobServices');
+const { postJobValidation, putJobValidation } = require('../validation/jobValidation');
+const { validate } = require('../validation/validation');
 
 async function postJobController(req, res, next) {
   try {
-    const { title, content, deadline } = req.body;
+    const { title, content, deadline } = validate(postJobValidation, req.body);
     const { id: userId } = req.user;
 
     const id = await postJobService({
@@ -30,7 +32,7 @@ async function postJobController(req, res, next) {
 
 async function putJobByIdController(req, res, next) {
   try {
-    const { title, content, deadline } = req.body;
+    const { title, content, deadline } = validate(putJobValidation, req.body);
     const { id: userId } = req.user;
     const { jobId } = req.params;
 

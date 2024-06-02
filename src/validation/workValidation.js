@@ -7,14 +7,12 @@ const postUserValidation = Joi.object({
     'string.max': 'name maksimal 30 huruf',
     'any.required': 'name tidak boleh kosong',
   }),
-  email: Joi.string().email().max(100).required()
-    .messages({
-      'string.base': 'email bertipe string',
-      'string.email': 'email harus berformat email',
-      'string.empty': 'email tidak boleh kosong',
-      'string.max': 'email maksimal 100 huruf',
-      'any.required': 'email tidak boleh kosong',
-    }),
+  email: Joi.string().max(100).required().messages({
+    'string.base': 'email harus berbentuk string',
+    'string.empty': 'email tidak boleh kosong',
+    'string.max': 'email maksimal 100 huruf',
+    'any.required': 'email tidak boleh kosong',
+  }),
   password: Joi.string().max(100).required().messages({
     'string.base': 'password harus berbentuk string',
     'string.empty': 'password tidak boleh kosong',
@@ -35,6 +33,12 @@ const putUserValidation = Joi.object({
     'string.empty': 'name tidak boleh kosong',
     'string.max': 'name maksimal 30 huruf',
     'any.required': 'name tidak boleh kosong',
+  }),
+  email: Joi.string().max(100).required().messages({
+    'string.base': 'email harus berbentuk string',
+    'string.empty': 'email tidak boleh kosong',
+    'string.max': 'email maksimal 100 huruf',
+    'any.required': 'email tidak boleh kosong',
   }),
   password: Joi.string().max(100).required().messages({
     'string.base': 'password harus berbentuk string',

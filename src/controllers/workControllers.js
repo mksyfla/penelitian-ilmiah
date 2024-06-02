@@ -8,7 +8,7 @@ async function postWorkController(req, res, next) {
     const { image } = req.files;
     const { jobId } = req.params;
     const { id: userId } = req.user;
-
+    console.log(image);
     const id = await postWorkService({
       title, content, image, jobId, userId, next,
     });

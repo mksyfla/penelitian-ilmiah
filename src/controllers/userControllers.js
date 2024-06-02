@@ -1,12 +1,14 @@
 const {
   postUserService, getUsersService, getUserByIdService, putUserByIdService,
 } = require('../services/userServices');
+const { postUserValidation } = require('../validation/userValidation');
+const { validate } = require('../validation/validation');
 
 async function postUserController(req, res, next) {
   try {
     const {
       name, email, password, category,
-    } = req.body;
+    } = validate(postUserValidation, req.body);
 
     const id = await postUserService({
       name, email, password, category,
@@ -69,11 +71,11 @@ async function getUserByIdController(req, res, next) {
 async function putUserByIdController(req, res, next) {
   try {
     const { id } = req.user;
-    const { name, email, password } = req.body;
     const { profile } = req.files;
+    const { name, password } = req.body;
 
     await putUserByIdService({
-      id, name, email, password, profile, next,
+      id, name, password, profile, next,
     });
 
     res.status(200).json({

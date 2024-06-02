@@ -1,8 +1,10 @@
 const { loginService } = require('../services/authServices');
+const { loginValidation } = require('../validation/authValidation');
+const validate = require('../validation/validation');
 
 async function loginController(req, res, next) {
   try {
-    const { email, password } = req.body;
+    const { email, password } = validate(loginValidation, req.body);
 
     const token = await loginService({ email, password });
 

@@ -72,7 +72,7 @@ async function getUserByIdService({ id, req }) {
 }
 
 async function putUserByIdService({
-  id, name, email, password, profile, next,
+  id, name, password, profile, next,
 }) {
   const result = await checkUserExist({ id });
   const updatedAt = new Date().toISOString();
@@ -87,14 +87,16 @@ async function putUserByIdService({
   });
 
   await putUserByIdRepository({
-    id, name, email, password: hashedPassword, profile: `public/${filename}`, updatedAt,
+    id, name, password: hashedPassword, profile: `public/${filename}`, updatedAt,
   });
 
-  fs.rm(path.join(__dirname, '../') + result.profile, (error) => {
-    if (error) {
-      next(error);
-    }
-  });
+  if (result.profile !== 'public/blank-profile.png') {
+    fs.rm(path.join(__dirname, '../') + result.profile, (error) => {
+      if (error) {
+        next(error);
+      }
+    });
+  }
 }
 
 module.exports = {
