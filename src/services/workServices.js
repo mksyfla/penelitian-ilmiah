@@ -1,6 +1,3 @@
-const path = require('path');
-const fs = require('fs');
-
 const {
   postWorkRepository,
   putWorkByIdRepository,
@@ -8,7 +5,6 @@ const {
   deleteWorkByIdRepository,
   getWorkByIdRepository,
   verifyOwnerWork,
-  getImagePath,
 } = require('../repositories/workRepositories');
 const {
   verifyJobExist,
@@ -16,71 +12,41 @@ const {
 } = require('../repositories/jobRepositories');
 
 async function postWorkService({
-  title, content, image, jobId, userId, next,
+  title, content, image, jobId, userId,
 }) {
   const createdAt = new Date().toISOString();
   await verifyDeadline({ id: jobId, deadline: createdAt });
 
-  const filename = `${Date.now()}-${image.name}`;
-
-  image.mv(path.join(__dirname, '../public/') + filename, (error) => {
-    if (error) {
-      next(error);
-    }
-  });
-
   const id = await postWorkRepository({
-    title, content, image: `public/${filename}`, createdAt, updatedAt: createdAt, jobId, userId,
+    title, content, image, createdAt, updatedAt: createdAt, jobId, userId,
   });
 
   return id;
 }
 
 async function putWorkByIdService({
-  id, title, content, image, jobId, userId, next,
+  id, title, content, image, jobId, userId,
 }) {
   await verifyJobExist({ id: jobId });
   await verifyWorkExist({ id });
   await verifyOwnerWork({ id: userId });
-  const result = await getImagePath({ id });
 
   const updatedAt = new Date().toISOString();
 
-  const filename = `${Date.now()}-${image.name}`;
-
-  image.mv(path.join(__dirname, '../public/') + filename, (error) => {
-    if (error) {
-      next(error);
-    }
-  });
-
   await putWorkByIdRepository({
-    id, title, content, image: `public/${filename}`, updatedAt, userId,
-  });
-
-  fs.rm(path.join(__dirname, '../') + result.image, (error) => {
-    if (error) {
-      next(error);
-    }
+    id, title, content, image, updatedAt, userId,
   });
 }
 
 async function deleteWorkByIdService({
-  id, userId, jobId, next,
+  id, userId, jobId,
 }) {
   await verifyJobExist({ id: jobId });
   await verifyWorkExist({ id });
   await verifyOwnerWork({ id: userId });
-  const result = await getImagePath({ id });
 
   await deleteWorkByIdRepository({
     id, userId,
-  });
-
-  fs.rm(path.join(__dirname, '../') + result.image, (error) => {
-    if (error) {
-      next(error);
-    }
   });
 }
 
@@ -95,6 +61,7 @@ async function getWorkByIdService({ id, jobId, req }) {
     image: `http://${req.headers.host}/${d.image}`,
     createdAt: d.createdAt,
     creator: d.name,
+    jobId: d.job_id,
   }));
 
   return mappedJob;

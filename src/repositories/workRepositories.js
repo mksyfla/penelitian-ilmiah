@@ -5,9 +5,10 @@ const AuthorizationError = require('../exceptions/AuthorizationError');
 
 async function getWorkByIdRepository({ id, jobId }) {
   const query = {
-    text: `SELECT w.id, w.title, w.content, w.is_choose, w.image, w.created_at as createdAt, u.name
+    text: `SELECT w.id, w.title, w.content, w.is_choose, w.image, w.created_at as createdAt, u.name, j.id as job_id
     FROM works as w
     LEFT JOIN users as u ON w.user_id = u.id
+    LEFT JOIN jobs as j ON w.job_id = j.id
     WHERE w.id = $1 AND w.job_id = $2
     ORDER BY w.is_choose ASC`,
     values: [id, jobId],

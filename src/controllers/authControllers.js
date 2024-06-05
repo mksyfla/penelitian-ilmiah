@@ -1,6 +1,6 @@
 const { loginService } = require('../services/authServices');
 const { loginValidation } = require('../validation/authValidation');
-const validate = require('../validation/validation');
+const { validate } = require('../validation/validation');
 
 async function loginController(req, res, next) {
   try {

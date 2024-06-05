@@ -1,16 +1,18 @@
 const {
   postWorkService, putWorkByIdService, deleteWorkByIdService, getWorkByIdService,
 } = require('../services/workServices');
+const { validate } = require('../validation/validation');
+const { postWorkValidation, putWorkValidation } = require('../validation/workValidation');
 
 async function postWorkController(req, res, next) {
   try {
-    const { title, content } = req.body;
-    const { image } = req.files;
+    const { title, content } = validate(postWorkValidation, req.body);
+    const imageUrl = req.file.path.replace(/\\/g, '/');
     const { jobId } = req.params;
     const { id: userId } = req.user;
-    console.log(image);
+
     const id = await postWorkService({
-      title, content, image, jobId, userId, next,
+      title, content, image: imageUrl, jobId, userId, next,
     });
 
     res.status(201).json({
@@ -27,13 +29,13 @@ async function postWorkController(req, res, next) {
 
 async function putWorkByIdController(req, res, next) {
   try {
-    const { title, content } = req.body;
-    const { image } = req.files;
+    const { title, content } = validate(putWorkValidation, req.body);
+    const imageUrl = req.file.path.replace(/\\/g, '/');
     const { jobId, workId } = req.params;
     const { id: userId } = req.user;
 
     await putWorkByIdService({
-      id: workId, title, content, image, jobId, userId, next,
+      id: workId, title, content, image: imageUrl, jobId, userId,
     });
 
     res.status(200).json({
@@ -51,7 +53,7 @@ async function deleteWorkByIdController(req, res, next) {
     const { id: userId } = req.user;
 
     await deleteWorkByIdService({
-      id: workId, jobId, userId, next,
+      id: workId, jobId, userId,
     });
 
     res.status(200).json({

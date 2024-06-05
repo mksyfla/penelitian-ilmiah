@@ -99,9 +99,10 @@ async function getUserUMKM({ id }) {
 
 async function getUserMahasiswa({ id }) {
   const query = {
-    text: `SELECT u.id, u.name, u.email, u.category, u.profile, w.id as work_id, w.title as work_title, w.content as work_content, w.image as work_image
+    text: `SELECT u.id, u.name, u.email, u.category, u.profile, w.id as work_id, w.title as work_title, w.content as work_content, w.image as work_image, j.id as job_id
     FROM users as u
     LEFT JOIN works as w ON w.user_id = u.id
+    LEFT JOIN jobs as j ON w.job_id = j.id
     WHERE (u.id = $1 AND u.category = 'MAHASISWA')
     ORDER BY w.created_at ASC`,
     values: [id],

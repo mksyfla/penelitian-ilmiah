@@ -1,6 +1,4 @@
 const bcrypt = require('bcrypt');
-const path = require('path');
-const fs = require('fs');
 
 const {
   postUserRepository,
@@ -72,31 +70,15 @@ async function getUserByIdService({ id, req }) {
 }
 
 async function putUserByIdService({
-  id, name, password, profile, next,
+  id, name, password, profile,
 }) {
-  const result = await checkUserExist({ id });
+  await checkUserExist({ id });
   const updatedAt = new Date().toISOString();
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  const filename = `${Date.now()}-${profile.name}`;
-
-  profile.mv(path.join(__dirname, '../public/') + filename, (error) => {
-    if (error) {
-      next(error);
-    }
-  });
-
   await putUserByIdRepository({
-    id, name, password: hashedPassword, profile: `public/${filename}`, updatedAt,
+    id, name, password: hashedPassword, profile, updatedAt,
   });
-
-  if (result.profile !== 'public/blank-profile.png') {
-    fs.rm(path.join(__dirname, '../') + result.profile, (error) => {
-      if (error) {
-        next(error);
-      }
-    });
-  }
 }
 
 module.exports = {

@@ -19,6 +19,7 @@ function userMappedforMahasiswa({ data, req }) {
         title: item.work_title,
         content: item.work_content,
         image: `http://${req.headers.host}/${item.work_image}`,
+        jobId: item.job_id,
       });
     }
   });
@@ -77,6 +78,7 @@ function jobByIdMapped({ data, req }) {
         image: `http://${req.headers.host}/${item.work_image}`,
         isChoose: item.work_is_choose,
         creator: item.work_name,
+        jobId: item.id,
       });
     }
   });
