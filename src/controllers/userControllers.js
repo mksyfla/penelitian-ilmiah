@@ -1,10 +1,16 @@
+const express = require('express');
 const {
   postUserService, getUsersService, getUserByIdService, putUserByIdService,
 } = require('../services/userServices');
+const { authenticationMiddleware } = require('../middleware/authMiddleware');
 const { postUserValidation, putUserValidation } = require('../validation/userValidation');
 const { validate } = require('../validation/validation');
 
-async function postUserController(req, res, next) {
+const multer = require('../utils/multer');
+
+const userController = express.Router();
+
+userController.post('/api/users', async (req, res, next) => {
   try {
     const {
       name, email, password, category,
@@ -24,9 +30,9 @@ async function postUserController(req, res, next) {
   } catch (error) {
     next(error);
   }
-}
+});
 
-async function getUsersController(req, res, next) {
+userController.get('/api/users', async (req, res, next) => {
   try {
     const users = await getUsersService({ req });
 
@@ -37,24 +43,9 @@ async function getUsersController(req, res, next) {
   } catch (error) {
     next(error);
   }
-}
+});
 
-async function getUserProfileController(req, res, next) {
-  try {
-    const { id } = req.user;
-
-    const user = await getUserByIdService({ id, req });
-
-    res.status(200).json({
-      status: 'success',
-      data: user,
-    });
-  } catch (error) {
-    next(error);
-  }
-}
-
-async function getUserByIdController(req, res, next) {
+userController.get('/api/users/:userId', async (req, res, next) => {
   try {
     const { userId } = req.params;
     const user = await getUserByIdService({ id: userId, req });
@@ -66,9 +57,9 @@ async function getUserByIdController(req, res, next) {
   } catch (error) {
     next(error);
   }
-}
+});
 
-async function putUserByIdController(req, res, next) {
+userController.put('/api/profile', authenticationMiddleware(), multer.single('profile'), async (req, res, next) => {
   try {
     const { id } = req.user;
     const imageUrl = req.file.path.replace(/\\/g, '/');
@@ -85,12 +76,21 @@ async function putUserByIdController(req, res, next) {
   } catch (error) {
     next(error);
   }
-}
+});
 
-module.exports = {
-  postUserController,
-  getUsersController,
-  getUserProfileController,
-  getUserByIdController,
-  putUserByIdController,
-};
+userController.get('/api/profile', authenticationMiddleware(), async (req, res, next) => {
+  try {
+    const { id } = req.user;
+
+    const user = await getUserByIdService({ id, req });
+
+    res.status(200).json({
+      status: 'success',
+      data: user,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+module.exports = { userController };

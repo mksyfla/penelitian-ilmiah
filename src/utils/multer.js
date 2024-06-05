@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const Multer = require('multer');
+const InvariantError = require('../exceptions/InvariantError');
 
 const storage = Multer.diskStorage({
   destination: (req, file, cb) => {
@@ -21,7 +22,7 @@ const multer = Multer({
     if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
       cb(null, true);
     } else {
-      cb(new Error('Invalid file type'));
+      cb(new InvariantError('Invalid file type'));
     }
   },
 });

@@ -1,8 +1,11 @@
+const express = require('express');
 const { loginService } = require('../services/authServices');
 const { loginValidation } = require('../validation/authValidation');
 const { validate } = require('../validation/validation');
 
-async function loginController(req, res, next) {
+const authController = express.Router();
+
+authController.post('/api/login', async (req, res, next) => {
   try {
     const { email, password } = validate(loginValidation, req.body);
 
@@ -18,6 +21,6 @@ async function loginController(req, res, next) {
   } catch (error) {
     next(error);
   }
-}
+});
 
-module.exports = { loginController };
+module.exports = { authController };

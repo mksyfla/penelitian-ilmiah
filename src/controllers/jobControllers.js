@@ -1,3 +1,4 @@
+const express = require('express');
 const {
   postJobService,
   putJobByIdService,
@@ -6,10 +7,40 @@ const {
   getJobByIdService,
   chooseWork,
 } = require('../services/jobServices');
+const { authenticationMiddleware, authorizationMiddleware } = require('../middleware/authMiddleware');
 const { postJobValidation, putJobValidation } = require('../validation/jobValidation');
 const { validate } = require('../validation/validation');
 
-async function postJobController(req, res, next) {
+const jobController = express.Router();
+
+jobController.get('/api/jobs', async (req, res, next) => {
+  try {
+    const data = await getJobsService();
+
+    res.status(200).json({
+      status: 'success',
+      data,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+jobController.get('/api/jobs/:jobId', async (req, res, next) => {
+  try {
+    const { jobId } = req.params;
+
+    const data = await getJobByIdService({ id: jobId, req });
+    res.status(200).json({
+      status: 'success',
+      data,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+jobController.post('/api/jobs', authenticationMiddleware(), authorizationMiddleware('UMKM'), async (req, res, next) => {
   try {
     const { title, content, deadline } = validate(postJobValidation, req.body);
     const { id: userId } = req.user;
@@ -28,9 +59,9 @@ async function postJobController(req, res, next) {
   } catch (error) {
     next(error);
   }
-}
+});
 
-async function putJobByIdController(req, res, next) {
+jobController.put('/api/jobs/:jobId', authenticationMiddleware(), authorizationMiddleware('UMKM'), async (req, res, next) => {
   try {
     const { title, content, deadline } = validate(putJobValidation, req.body);
     const { id: userId } = req.user;
@@ -47,9 +78,9 @@ async function putJobByIdController(req, res, next) {
   } catch (error) {
     next(error);
   }
-}
+});
 
-async function deleteJobByIdController(req, res, next) {
+jobController.delete('/api/jobs/:jobId', authenticationMiddleware(), authorizationMiddleware('UMKM'), async (req, res, next) => {
   try {
     const { id: userId } = req.user;
     const { jobId } = req.params;
@@ -65,36 +96,9 @@ async function deleteJobByIdController(req, res, next) {
   } catch (error) {
     next(error);
   }
-}
+});
 
-async function getJobsController(req, res, next) {
-  try {
-    const data = await getJobsService();
-
-    res.status(200).json({
-      status: 'success',
-      data,
-    });
-  } catch (error) {
-    next(error);
-  }
-}
-
-async function getJobByIdController(req, res, next) {
-  try {
-    const { jobId } = req.params;
-
-    const data = await getJobByIdService({ id: jobId, req });
-    res.status(200).json({
-      status: 'success',
-      data,
-    });
-  } catch (error) {
-    next(error);
-  }
-}
-
-async function chooseWorkController(req, res, next) {
+jobController.post('/api/jobs/:jobId/works/:workId', authenticationMiddleware(), authorizationMiddleware('UMKM'), async (req, res, next) => {
   try {
     const { jobId, workId } = req.params;
     const { id: userId } = req.user;
@@ -110,13 +114,6 @@ async function chooseWorkController(req, res, next) {
   } catch (error) {
     next(error);
   }
-}
+});
 
-module.exports = {
-  postJobController,
-  putJobByIdController,
-  deleteJobByIdController,
-  getJobsController,
-  getJobByIdController,
-  chooseWorkController,
-};
+module.exports = { jobController };

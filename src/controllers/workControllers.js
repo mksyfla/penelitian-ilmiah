@@ -1,10 +1,33 @@
+const express = require('express');
 const {
   postWorkService, putWorkByIdService, deleteWorkByIdService, getWorkByIdService,
 } = require('../services/workServices');
-const { validate } = require('../validation/validation');
+const { authenticationMiddleware, authorizationMiddleware } = require('../middleware/authMiddleware');
 const { postWorkValidation, putWorkValidation } = require('../validation/workValidation');
+const { validate } = require('../validation/validation');
 
-async function postWorkController(req, res, next) {
+const multer = require('../utils/multer');
+
+const workController = express.Router();
+
+workController.get('/api/jobs/:jobId/works/:workId', async (req, res, next) => {
+  try {
+    const { jobId, workId } = req.params;
+
+    const data = await getWorkByIdService({
+      id: workId, jobId, req,
+    });
+
+    res.status(200).json({
+      status: 'success',
+      data,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+workController.post('/api/jobs/:jobId/works', authenticationMiddleware(), authorizationMiddleware('MAHASISWA'), multer.single('image'), async (req, res, next) => {
   try {
     const { title, content } = validate(postWorkValidation, req.body);
     const imageUrl = req.file.path.replace(/\\/g, '/');
@@ -25,9 +48,9 @@ async function postWorkController(req, res, next) {
   } catch (error) {
     next(error);
   }
-}
+});
 
-async function putWorkByIdController(req, res, next) {
+workController.put('/api/jobs/:jobId/works/:workId', authenticationMiddleware(), authorizationMiddleware('MAHASISWA'), multer.single('image'), async (req, res, next) => {
   try {
     const { title, content } = validate(putWorkValidation, req.body);
     const imageUrl = req.file.path.replace(/\\/g, '/');
@@ -45,9 +68,9 @@ async function putWorkByIdController(req, res, next) {
   } catch (error) {
     next(error);
   }
-}
+});
 
-async function deleteWorkByIdController(req, res, next) {
+workController.delete('/api/jobs/:jobId/works/:workId', authenticationMiddleware(), authorizationMiddleware('MAHASISWA'), async (req, res, next) => {
   try {
     const { jobId, workId } = req.params;
     const { id: userId } = req.user;
@@ -63,25 +86,6 @@ async function deleteWorkByIdController(req, res, next) {
   } catch (error) {
     next(error);
   }
-}
+});
 
-async function getWorkByIdController(req, res, next) {
-  try {
-    const { jobId, workId } = req.params;
-
-    const data = await getWorkByIdService({
-      id: workId, jobId, req,
-    });
-
-    res.status(200).json({
-      status: 'success',
-      data,
-    });
-  } catch (error) {
-    next(error);
-  }
-}
-
-module.exports = {
-  postWorkController, putWorkByIdController, deleteWorkByIdController, getWorkByIdController,
-};
+module.exports = { workController };

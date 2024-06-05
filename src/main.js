@@ -4,11 +4,11 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const cors = require('cors');
 
-const { userRoutes } = require('./routes/userRoutes');
-const { loginRoutes } = require('./routes/authRoutes');
+const { userController } = require('./controllers/userControllers');
+const { authController } = require('./controllers/authControllers');
 const { errorMiddleware } = require('./middleware/errorMiddleware');
-const { jobRoutes } = require('./routes/jobRoutes');
-const { workRoutes } = require('./routes/workRoutes');
+const { jobController } = require('./controllers/jobControllers');
+const { workController } = require('./controllers/workControllers');
 
 function init() {
   const app = express();
@@ -18,10 +18,10 @@ function init() {
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use('/public', express.static(path.join(__dirname, '../public')));
 
-  app.use(loginRoutes);
-  app.use(userRoutes);
-  app.use(jobRoutes);
-  app.use(workRoutes);
+  app.use(authController);
+  app.use(userController);
+  app.use(jobController);
+  app.use(workController);
   app.use(errorMiddleware);
 
   app.post('/', (req, res, next) => {
