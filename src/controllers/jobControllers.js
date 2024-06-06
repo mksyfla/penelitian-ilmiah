@@ -30,7 +30,7 @@ jobController.get('/api/jobs/:jobId', async (req, res, next) => {
   try {
     const { jobId } = req.params;
 
-    const data = await getJobByIdService({ id: jobId, req });
+    const data = await getJobByIdService({ jobId, req });
     res.status(200).json({
       status: 'success',
       data,
@@ -68,7 +68,7 @@ jobController.put('/api/jobs/:jobId', authenticationMiddleware(), authorizationM
     const { jobId } = req.params;
 
     await putJobByIdService({
-      id: jobId, title, content, deadline, userId,
+      jobId, title, content, deadline, userId,
     });
 
     res.status(200).json({
@@ -86,7 +86,7 @@ jobController.delete('/api/jobs/:jobId', authenticationMiddleware(), authorizati
     const { jobId } = req.params;
 
     await deleteJobByIdService({
-      id: jobId, userId,
+      jobId, userId,
     });
 
     res.status(200).json({
@@ -104,7 +104,7 @@ jobController.post('/api/jobs/:jobId/works/:workId', authenticationMiddleware(),
     const { id: userId } = req.user;
 
     await chooseWork({
-      id: jobId, workId, userId,
+      jobId, workId, userId,
     });
 
     res.status(200).json({

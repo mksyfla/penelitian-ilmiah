@@ -15,15 +15,13 @@ async function postUserRepository({
 
   const result = await pg.query(query);
 
-  if (!result.rows[0].id) {
-    throw new InvariantError('user gagal ditambahkan');
-  }
+  if (!result.rows[0].id) throw new InvariantError('user gagal ditambahkan');
 
   return result.rows[0].id;
 }
 
 async function putUserByIdRepository({
-  id, name, password, profile, updatedAt,
+  userId, name, password, profile, updatedAt,
 }) {
   const query = {
     text: `
@@ -31,13 +29,12 @@ async function putUserByIdRepository({
     SET name = $1, password = $2, profile = $3, updated_at = $4
     WHERE id = $5
     RETURNING id`,
-    values: [name, password, profile, updatedAt, id],
+    values: [name, password, profile, updatedAt, userId],
   };
+
   const result = await pg.query(query);
 
-  if (!result.rowCount) {
-    throw new NotFoundError('user tidak ditemukan');
-  }
+  if (!result.rowCount) throw new NotFoundError('user tidak ditemukan');
 }
 
 async function verifyEmail({ email }) {
@@ -48,9 +45,7 @@ async function verifyEmail({ email }) {
 
   const result = await pg.query(query);
 
-  if (result.rowCount > 0) {
-    throw new InvariantError('email telah digunakan');
-  }
+  if (result.rowCount > 0) throw new InvariantError('email telah digunakan');
 }
 
 async function getUsersRepository() {
@@ -63,56 +58,52 @@ async function getUsersRepository() {
   return result.rows;
 }
 
-async function checkUserExist({ id }) {
+async function checkUserExist({ userId }) {
   const query = {
     text: 'SELECT id, category, profile FROM users WHERE id = $1',
-    values: [id],
+    values: [userId],
   };
 
   const result = await pg.query(query);
 
-  if (!result.rowCount) {
-    throw new NotFoundError('user tidak ditemukan');
-  }
+  if (!result.rowCount) throw new NotFoundError('user tidak ditemukan');
 
   return result.rows[0];
 }
 
-async function getUserUMKM({ id }) {
+async function getUserUMKM({ userId }) {
   const query = {
-    text: `SELECT u.id, u.name, u.email, u.category, u.profile, j.id as job_id, j.title as job_title, j.content as job_content, j.deadline as job_deadline
+    text: `
+    SELECT u.id, u.name, u.email, u.category, u.profile, j.id as job_id, j.title as job_title, j.content as job_content, j.deadline as job_deadline
     FROM users as u
     LEFT JOIN jobs as j ON j.user_id = u.id
     WHERE (u.id = $1 AND u.category = 'UMKM')
     ORDER BY j.created_at ASC`,
-    values: [id],
+    values: [userId],
   };
 
   const result = await pg.query(query);
 
-  if (!result.rowCount) {
-    throw new NotFoundError('user tidak ditemukan');
-  }
+  if (!result.rowCount) throw new NotFoundError('user tidak ditemukan');
 
   return result.rows;
 }
 
-async function getUserMahasiswa({ id }) {
+async function getUserMahasiswa({ userId }) {
   const query = {
-    text: `SELECT u.id, u.name, u.email, u.category, u.profile, w.id as work_id, w.title as work_title, w.content as work_content, w.image as work_image, j.id as job_id
+    text: `
+    SELECT u.id, u.name, u.email, u.category, u.profile, w.id as work_id, w.title as work_title, w.content as work_content, w.image as work_image, j.id as job_id
     FROM users as u
     LEFT JOIN works as w ON w.user_id = u.id
     LEFT JOIN jobs as j ON w.job_id = j.id
     WHERE (u.id = $1 AND u.category = 'MAHASISWA')
     ORDER BY w.created_at ASC`,
-    values: [id],
+    values: [userId],
   };
 
   const result = await pg.query(query);
 
-  if (!result.rowCount) {
-    throw new NotFoundError('user tidak ditemukan');
-  }
+  if (!result.rowCount) throw new NotFoundError('user tidak ditemukan');
 
   return result.rows;
 }

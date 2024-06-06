@@ -15,7 +15,7 @@ workController.get('/api/jobs/:jobId/works/:workId', async (req, res, next) => {
     const { jobId, workId } = req.params;
 
     const data = await getWorkByIdService({
-      id: workId, jobId, req,
+      workId, jobId, req,
     });
 
     res.status(200).json({
@@ -58,7 +58,7 @@ workController.put('/api/jobs/:jobId/works/:workId', authenticationMiddleware(),
     const { id: userId } = req.user;
 
     await putWorkByIdService({
-      id: workId, title, content, image: imageUrl, jobId, userId,
+      workId, title, content, image: imageUrl, jobId, userId,
     });
 
     res.status(200).json({
@@ -76,7 +76,7 @@ workController.delete('/api/jobs/:jobId/works/:workId', authenticationMiddleware
     const { id: userId } = req.user;
 
     await deleteWorkByIdService({
-      id: workId, jobId, userId,
+      workId, jobId, userId,
     });
 
     res.status(200).json({

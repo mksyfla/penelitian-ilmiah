@@ -15,7 +15,7 @@ async function postWorkService({
   title, content, image, jobId, userId,
 }) {
   const createdAt = new Date().toISOString();
-  await verifyDeadline({ id: jobId, deadline: createdAt });
+  await verifyDeadline({ jobId, deadline: createdAt });
 
   const id = await postWorkRepository({
     title, content, image, createdAt, updatedAt: createdAt, jobId, userId,
@@ -25,33 +25,33 @@ async function postWorkService({
 }
 
 async function putWorkByIdService({
-  id, title, content, image, jobId, userId,
+  workId, title, content, image, jobId, userId,
 }) {
-  await verifyJobExist({ id: jobId });
-  await verifyWorkExist({ id });
-  await verifyOwnerWork({ id: userId });
+  await verifyJobExist({ jobId });
+  await verifyWorkExist({ workId });
+  await verifyOwnerWork({ userId });
 
   const updatedAt = new Date().toISOString();
 
   await putWorkByIdRepository({
-    id, title, content, image, updatedAt, userId,
+    workId, title, content, image, updatedAt, userId,
   });
 }
 
 async function deleteWorkByIdService({
-  id, userId, jobId,
+  workId, userId, jobId,
 }) {
-  await verifyJobExist({ id: jobId });
-  await verifyWorkExist({ id });
-  await verifyOwnerWork({ id: userId });
+  await verifyJobExist({ jobId });
+  await verifyWorkExist({ workId });
+  await verifyOwnerWork({ userId });
 
   await deleteWorkByIdRepository({
-    id, userId,
+    workId, userId,
   });
 }
 
-async function getWorkByIdService({ id, jobId, req }) {
-  const data = await getWorkByIdRepository({ id, jobId });
+async function getWorkByIdService({ workId, jobId, req }) {
+  const data = await getWorkByIdRepository({ workId, jobId });
 
   const mappedJob = data.map((d) => ({
     id: d.id,

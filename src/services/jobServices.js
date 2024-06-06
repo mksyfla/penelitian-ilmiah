@@ -8,7 +8,7 @@ const {
   verifyJobExist,
 } = require('../repositories/jobRepositories');
 const { verifyWorkExist, workChoose } = require('../repositories/workRepositories');
-const mapping = require('../utils/mapping');
+const { jobByIdMapped } = require('../utils/mapping');
 
 async function postJobService({
   title, content, deadline, userId,
@@ -29,23 +29,23 @@ async function postJobService({
 }
 
 async function putJobByIdService({
-  id, title, content, deadline, userId,
+  jobId, title, content, deadline, userId,
 }) {
-  await verifyJobExist({ id });
-  await verifyOwnerJob({ id: userId });
+  await verifyJobExist({ jobId });
+  await verifyOwnerJob({ jobId, userId });
 
   const updatedAt = new Date().toISOString();
 
   await putJobByIdRepository({
-    id, title, content, deadline, updatedAt, userId,
+    jobId, title, content, deadline, updatedAt, userId,
   });
 }
 
-async function deleteJobByIdService({ id, userId }) {
-  await verifyJobExist({ id });
-  await verifyOwnerJob({ id: userId });
+async function deleteJobByIdService({ jobId, userId }) {
+  await verifyJobExist({ jobId });
+  await verifyOwnerJob({ jobId, userId });
 
-  await deleteJobByIdRepository({ id, userId });
+  await deleteJobByIdRepository({ jobId, userId });
 }
 
 async function getJobsService() {
@@ -54,18 +54,18 @@ async function getJobsService() {
   return data;
 }
 
-async function getJobByIdService({ id, req }) {
-  const data = await getJobByIdRepository({ id });
-  const mappedJob = mapping.jobByIdMapped({ data, req });
+async function getJobByIdService({ jobId, req }) {
+  const data = await getJobByIdRepository({ jobId });
+  const mappedJob = jobByIdMapped({ data, req });
 
   return mappedJob;
 }
 
-async function chooseWork({ id, workId, userId }) {
-  await verifyJobExist({ id });
-  await verifyOwnerJob({ id: userId });
-  await verifyWorkExist({ id: workId });
-  await workChoose({ id: workId, jobId: workId });
+async function chooseWork({ jobId, workId, userId }) {
+  await verifyJobExist({ jobId });
+  await verifyOwnerJob({ jobId, userId });
+  await verifyWorkExist({ jobId: workId });
+  await workChoose({ workId, jobId });
 }
 
 module.exports = {

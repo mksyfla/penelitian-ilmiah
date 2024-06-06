@@ -1,4 +1,4 @@
-function userMappedforMahasiswa({ data, req }) {
+function userMapped({ data, req }) {
   let mappedUser;
 
   data.forEach((item) => {
@@ -9,46 +9,34 @@ function userMappedforMahasiswa({ data, req }) {
         email: item.email,
         category: item.category,
         profile: `http://${req.headers.host}/${item.profile}`,
-        works: [],
       };
+
+      if (item.category === 'UMKM') {
+        mappedUser.jobs = [];
+      } else if (item.category === 'MAHASISWA') {
+        mappedUser.works = [];
+      }
     }
 
-    if (item.work_id) {
-      mappedUser.works.push({
-        id: item.work_id,
-        title: item.work_title,
-        content: item.work_content,
-        image: `http://${req.headers.host}/${item.work_image}`,
-        jobId: item.job_id,
-      });
-    }
-  });
-
-  return mappedUser;
-}
-
-function userMappedforUMKM({ data, req }) {
-  let mappedUser;
-
-  data.forEach((item) => {
-    if (!mappedUser) {
-      mappedUser = {
-        id: item.id,
-        name: item.name,
-        email: item.email,
-        category: item.category,
-        profile: `http://${req.headers.host}/${item.profile}`,
-        jobs: [],
-      };
-    }
-
-    if (item.job_id) {
-      mappedUser.jobs.push({
-        id: item.job_id,
-        title: item.job_title,
-        content: item.job_content,
-        deadline: item.job_deadline,
-      });
+    if (item.category === 'UMKM') {
+      if (item.job_id) {
+        mappedUser.jobs.push({
+          id: item.job_id,
+          title: item.job_title,
+          content: item.job_content,
+          deadline: item.job_deadline,
+        });
+      }
+    } else if (item.category === 'MAHASISWA') {
+      if (item.work_id) {
+        mappedUser.works.push({
+          id: item.work_id,
+          title: item.work_title,
+          content: item.work_content,
+          image: `http://${req.headers.host}/${item.work_image}`,
+          jobId: item.job_id,
+        });
+      }
     }
   });
 
@@ -86,4 +74,6 @@ function jobByIdMapped({ data, req }) {
   return mappedJob;
 }
 
-module.exports = { userMappedforMahasiswa, userMappedforUMKM, jobByIdMapped };
+module.exports = {
+  jobByIdMapped, userMapped,
+};

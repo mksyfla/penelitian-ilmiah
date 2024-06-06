@@ -11,7 +11,7 @@ const {
 } = require('../repositories/userRepositories');
 const InvariantError = require('../exceptions/InvariantError');
 const roles = require('../utils/roles');
-const mapping = require('../utils/mapping');
+const { userMapped } = require('../utils/mapping');
 
 async function postUserService({
   name, email, password, category,
@@ -52,16 +52,16 @@ async function getUsersService({ req }) {
   return mappedUsers;
 }
 
-async function getUserByIdService({ id, req }) {
-  const user = await checkUserExist({ id });
+async function getUserByIdService({ userId, req }) {
+  const user = await checkUserExist({ userId });
   let mappedUser;
 
   if (user.category === 'UMKM') {
-    const data = await getUserUMKM({ id });
-    mappedUser = mapping.userMappedforUMKM({ data, req });
+    const data = await getUserUMKM({ userId });
+    mappedUser = userMapped({ data, req });
   } else if (user.category === 'MAHASISWA') {
-    const data = await getUserMahasiswa({ id });
-    mappedUser = mapping.userMappedforMahasiswa({ data, req });
+    const data = await getUserMahasiswa({ userId });
+    mappedUser = userMapped({ data, req });
   } else {
     throw new InvariantError('role tidak ditemukan');
   }
@@ -70,14 +70,14 @@ async function getUserByIdService({ id, req }) {
 }
 
 async function putUserByIdService({
-  id, name, password, profile,
+  userId, name, password, profile,
 }) {
-  await checkUserExist({ id });
+  await checkUserExist({ userId });
   const updatedAt = new Date().toISOString();
   const hashedPassword = await bcrypt.hash(password, 10);
 
   await putUserByIdRepository({
-    id, name, password: hashedPassword, profile, updatedAt,
+    userId, name, password: hashedPassword, profile, updatedAt,
   });
 }
 

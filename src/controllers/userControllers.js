@@ -48,7 +48,7 @@ userController.get('/api/users', async (req, res, next) => {
 userController.get('/api/users/:userId', async (req, res, next) => {
   try {
     const { userId } = req.params;
-    const user = await getUserByIdService({ id: userId, req });
+    const user = await getUserByIdService({ userId, req });
 
     res.status(200).json({
       status: 'success',
@@ -61,12 +61,12 @@ userController.get('/api/users/:userId', async (req, res, next) => {
 
 userController.put('/api/profile', authenticationMiddleware(), multer.single('profile'), async (req, res, next) => {
   try {
-    const { id } = req.user;
+    const { id: userId } = req.user;
     const imageUrl = req.file.path.replace(/\\/g, '/');
     const { name, password } = validate(putUserValidation, req.body);
 
     await putUserByIdService({
-      id, name, password, profile: imageUrl,
+      userId, name, password, profile: imageUrl,
     });
 
     res.status(200).json({
@@ -80,9 +80,9 @@ userController.put('/api/profile', authenticationMiddleware(), multer.single('pr
 
 userController.get('/api/profile', authenticationMiddleware(), async (req, res, next) => {
   try {
-    const { id } = req.user;
+    const { id: userId } = req.user;
 
-    const user = await getUserByIdService({ id, req });
+    const user = await getUserByIdService({ userId, req });
 
     res.status(200).json({
       status: 'success',
