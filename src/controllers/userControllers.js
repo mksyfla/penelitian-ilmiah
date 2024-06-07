@@ -63,10 +63,10 @@ userController.put('/api/profile', authenticationMiddleware(), multer.single('pr
   try {
     const { id: userId } = req.user;
     const imageUrl = req.file.path.replace(/\\/g, '/');
-    const { name, password } = validate(putUserValidation, req.body);
+    const { name } = validate(putUserValidation, req.body);
 
     await putUserByIdService({
-      userId, name, password, profile: imageUrl,
+      userId, name, profile: imageUrl,
     });
 
     res.status(200).json({

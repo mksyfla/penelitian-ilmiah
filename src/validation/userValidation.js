@@ -36,12 +36,6 @@ const putUserValidation = Joi.object({
     'string.max': 'name maksimal 30 huruf',
     'any.required': 'name tidak boleh kosong',
   }),
-  password: Joi.string().max(100).required().messages({
-    'string.base': 'password harus berbentuk string',
-    'string.empty': 'password tidak boleh kosong',
-    'string.max': 'password maksimal 100 huruf',
-    'any.required': 'password tidak boleh kosong',
-  }),
 });
 
 module.exports = { postUserValidation, putUserValidation };

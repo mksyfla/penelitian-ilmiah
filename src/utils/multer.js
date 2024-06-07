@@ -12,7 +12,7 @@ const storage = Multer.diskStorage({
     cb(null, 'public');
   },
   filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
+    cb(null, Date.now() + path.extname(file.originalname));
   },
 });
 

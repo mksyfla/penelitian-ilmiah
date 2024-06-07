@@ -12,6 +12,7 @@ const {
 const InvariantError = require('../exceptions/InvariantError');
 const roles = require('../utils/roles');
 const { userMapped } = require('../utils/mapping');
+const deleteFile = require('../utils/deleteFile');
 
 async function postUserService({
   name, email, password, category,
@@ -70,15 +71,16 @@ async function getUserByIdService({ userId, req }) {
 }
 
 async function putUserByIdService({
-  userId, name, password, profile,
+  userId, name, profile,
 }) {
-  await checkUserExist({ userId });
+  const result = await checkUserExist({ userId });
   const updatedAt = new Date().toISOString();
-  const hashedPassword = await bcrypt.hash(password, 10);
 
   await putUserByIdRepository({
-    userId, name, password: hashedPassword, profile, updatedAt,
+    userId, name, profile, updatedAt,
   });
+
+  deleteFile(result.profile);
 }
 
 module.exports = {

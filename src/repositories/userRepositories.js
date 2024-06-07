@@ -21,15 +21,15 @@ async function postUserRepository({
 }
 
 async function putUserByIdRepository({
-  userId, name, password, profile, updatedAt,
+  userId, name, profile, updatedAt,
 }) {
   const query = {
     text: `
     UPDATE users
-    SET name = $1, password = $2, profile = $3, updated_at = $4
-    WHERE id = $5
+    SET name = $1, profile = $2,  updated_at= $3
+    WHERE id = $4
     RETURNING id`,
-    values: [name, password, profile, updatedAt, userId],
+    values: [name, profile, updatedAt, userId],
   };
 
   const result = await pg.query(query);
