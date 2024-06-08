@@ -64,7 +64,7 @@ async function getJobByIdService({ jobId, req }) {
 async function chooseWork({ jobId, workId, userId }) {
   await verifyJobExist({ jobId });
   await verifyOwnerJob({ jobId, userId });
-  await verifyWorkExist({ jobId: workId });
+  await verifyWorkExist({ workId });
   await workChoose({ workId, jobId });
 }
 

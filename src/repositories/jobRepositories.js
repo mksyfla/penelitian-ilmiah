@@ -6,7 +6,7 @@ const NotFoundError = require('../exceptions/NotFoundError');
 async function getJobsRepository() {
   const query = {
     text: `
-    SELECT j.id, j.title, j.content, u.name
+    SELECT j.id, j.title, j.content, j.deadline, u.name
     FROM jobs as j
     LEFT JOIN users as u ON j.user_id = u.id`,
   };
